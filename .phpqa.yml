@@ -1,0 +1,4 @@
+phpcs:
+  standard: tests/phpcs-standards/fiery-slash
+phpmd:
+  standard: phpmd.xml

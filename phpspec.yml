@@ -1,0 +1,7 @@
+bootstrap: tests/fixtures/bootstrap.php
+suites:
+  default:
+    namespace: Triage
+    psr4_prefix: Triage
+    spec_path: tests
+    src_path: app/code

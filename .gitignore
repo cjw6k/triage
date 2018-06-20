@@ -1,0 +1,12 @@
+/logs/
+
+/vendor/
+
+/var/*
+!/var/.gitignore
+
+!/var/build/
+/var/build/*
+!/var/build/.gitignore
+
+/public/docs
