@@ -58,4 +58,16 @@ class TriageSpec extends ObjectBehavior
 		$this->run()->shouldReturn(1);
 	}
 
+	function it_exits_with_status_zero_if_a_source_file_is_provided()
+	{
+		$this->beConstructedWith('dev-version', array('', 'composer.json'));
+		$this->run()->shouldReturn(0);
+	}
+	
+	function it_exits_with_status_zero_if_a_source_directory_is_provided()
+	{
+		$this->beConstructedWith('dev-version', array('', 'bin'));
+		$this->run()->shouldReturn(0);
+	}
+
 }

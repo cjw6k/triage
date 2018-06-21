@@ -27,3 +27,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - usage feature
 - help feature
 - version feature
+- invalid sources feature

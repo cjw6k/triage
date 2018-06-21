@@ -78,6 +78,20 @@ class Triage
 	private $_usage_message = "Usage: triage [OPTION]... SOURCE";
 
 	/**
+	 * A reference to the analyzer component
+	 *
+	 * @var Triage\Analyzer
+	 */
+	private $_analyzer = null;
+
+	/**
+	 * A reference to the reporter component
+	 *
+	 * @var Triage\Reporter
+	 */
+	private $_reporter = null;
+
+	/**
 	 * Capture version and command line arguments
 	 *
 	 * @param string       $version Current program version.
@@ -115,6 +129,12 @@ class Triage
 			$this->_showError();
 			return 1;
 		}
+
+		$this->_initialize();
+
+		$analysis = $this->_analyzer->analyze($this->_source);
+
+		$this->_reporter->report($analysis);
 
 		return 0;
 	}
@@ -248,6 +268,8 @@ class Triage
 			$this->_arguments_error_message = "triage: cannot open '$this->_source' for reading: Permission denied";
 			return false;
 		}
+
+		return true;
 	}
 
 	/**
@@ -262,6 +284,20 @@ class Triage
 		}
 
 		echo $this->_arguments_error_message, PHP_EOL;
+	}
+
+	/**
+	 * Initialize the required components
+	 *
+	 * @return void
+	 */
+	private function _initialize()
+	{
+		$this->_analyzer = new Triage\Analyzer(
+			new Triage\Picker()
+		);
+
+		$this->_reporter = new Triage\Reporter();
 	}
 
 }

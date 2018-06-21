@@ -88,7 +88,28 @@ class CommandContext implements Context, SnippetAcceptingContext
 			assertTrue(chmod($directory, 0200));
 		}
 		assertFalse(is_readable($directory));
-	}	
+	}
 
+	/**
+	 * @Given The file :filename exists with:
+	 */
+	public function theFileExistsWith($filename, PyStringNode $content)
+	{
+		$dir = dirname($filename);
+		if(!is_dir($dir)){
+			assertTrue(mkdir($dir, 0755, true));
+		}
+		assertTrue(is_dir($dir));
+		assertTrue(false !== file_put_contents($filename, $content));
+	}
+	
+    /**
+     * @When I run triage with argument :argument
+     */
+    public function iRunTriageWithArgument($argument)
+    {
+        exec("bin/triage '$argument'", $this->_command_output, $this->_command_exit_status);
+    }
+	
 }
 
