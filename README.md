@@ -3,8 +3,8 @@
 ## Code Documentation
 To generate the documentation, run phpdox with `./vendor/bin/phpdox`. This generates and copies the documentation into `./public/docs/`.
 
-**Note:** Running the tests also generates updated documentation, but only if the behat & phpspec tests all pass.
-**Note:** If you don't use `./public` for your public www root, adjust the `./run-tests.sh` script to suit your setup.
+**Note:** Running the tests also generates updated documentation, but only if the behat & phpspec tests all pass.  
+**Note:** If you don't use `./public` for your public www root, adjust the `./run-tests.sh` script to suit your setup.  
 **Note:** A www-server is only required to view the documentation and QA reports. Triage is a command-line application.
 
 ## Testing
@@ -29,7 +29,7 @@ $DIR/phpcs-default "$@" --tab-width=4
 
 ## Acknowledgements
 Everyone at [#IndieWebCamp](https://indieweb.org/)!  
-The team behing [microformats](http://microformats.org/)!
+The community that is [microformats](http://microformats.org/)!
 
 ## License
 See the [LICENSE.md](LICENSE.md) file for license rights and limitations (MIT).
