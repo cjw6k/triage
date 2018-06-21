@@ -43,6 +43,13 @@ class Triage
 	private $_arguments_error = false;
 
 	/**
+	 * Relevant error message for invalid command line arguments
+	 *
+	 * @var string
+	 */
+	private $_arguments_error_message = '';
+
+	/**
 	 * Command line argument --help
 	 *
 	 * @var boolean
@@ -104,6 +111,11 @@ class Triage
 			return 0;
 		}
 
+		if(!$this->_hasValidSource()){
+			$this->_showError();
+			return 1;
+		}
+
 		return 0;
 	}
 
@@ -155,6 +167,7 @@ class Triage
 
 			default:
 				if(null !== $this->_source){
+					// Two is too many (so is any amount which is more than one)
 					$this->_arguments_error = true;
 				}
 				$this->_source = $argument;
@@ -213,6 +226,42 @@ class Triage
 		echo "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,", PHP_EOL;
 		echo "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE", PHP_EOL;
 		echo "SOFTWARE.", PHP_EOL;
+	}
+
+	/**
+	 * Ensure SOURCE argument is a readable file or directory
+	 *
+	 * Provides a relevant error message if SOURCE is not valid.
+	 *
+	 * @return boolean true  The SOURCE is readable.
+	 *                 false The SOURCE is not readable.
+	 */
+	private function _hasValidSource()
+	{
+		$realpath = realpath($this->_source);
+		if(false === $realpath){
+			$this->_arguments_error_message = "triage: no such file or directory";
+			return false;
+		}
+
+		if(!is_readable($this->_source)){
+			$this->_arguments_error_message = "triage: cannot open '$this->_source' for reading: Permission denied";
+			return false;
+		}
+	}
+
+	/**
+	 * Show the relevant error message for invalid arguments
+	 *
+	 * @return void
+	 */
+	private function _showError()
+	{
+		if(empty($this->_arguments_error_message)){
+			return;
+		}
+
+		echo $this->_arguments_error_message, PHP_EOL;
 	}
 
 }

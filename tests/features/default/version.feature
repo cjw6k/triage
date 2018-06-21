@@ -1,7 +1,7 @@
 Feature: The version information is displayed to help the user know about the program version
 	In order to know which version of the program I am using
 	As a user
-	I muse see version information
+	I must see version information
 
 	Scenario: Supplying the --version argument on the command line
 		Given My current working directory is the package root directory

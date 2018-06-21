@@ -39,5 +39,23 @@ class TriageSpec extends ObjectBehavior
 		$this->beConstructedWith('dev-version', array('', '--help'));
 		$this->run()->shouldReturn(0);
 	}
+	
+	function it_exits_with_status_zero_if_version_argument_is_provided()
+	{
+		$this->beConstructedWith('dev-version', array('', '--version'));
+		$this->run()->shouldReturn(0);
+	}
+	
+	function it_exits_with_status_one_if_too_many_arguments_are_provided()
+	{
+		$this->beConstructedWith('dev-version', array('', 'too', 'many', 'arguments'));
+		$this->run()->shouldReturn(1);
+	}
+	
+	function it_exits_with_status_one_if_invalid_source_is_provided()
+	{
+		$this->beConstructedWith('dev-version', array('', 'not-a-file.test'));
+		$this->run()->shouldReturn(1);
+	}
 
 }
