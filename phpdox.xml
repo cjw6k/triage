@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpdox xmlns="http://xml.phpdox.net/config" silent="true">
-	<project name="A6A" source="${basedir}/app/code/" workdir="${basedir}/var/build/phpdox/xml">
+	<project name="Triage" source="${basedir}/app/code/" workdir="${basedir}/var/build/phpdox/xml">
 		<collector publiconly="false" backend="parser" encoding="auto">
 			<include mask="*.php"/>
 			<inheritance resolve="true"/>

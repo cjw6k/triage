@@ -34,7 +34,7 @@
 		"Triage\\": "app/code"
 	},
 	"files": [
-		"app/code/utilities.php"
+		"app/utilities.php"
 	]
     },
     "extra": {
@@ -44,5 +44,11 @@
     },
     "bin": [
     	"bin/triage"
-    ]
+    ],
+    "scripts": {
+        "post-update-cmd": [
+	   "bin/latest-mime-types",
+	   "bin/latest-microformats"
+	]
+    }
 }

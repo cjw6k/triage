@@ -1,0 +1,50 @@
+#!/usr/bin/env php
+<?php
+
+$mime_types = array();
+
+$mime_types_raw = file_get_contents('https://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types');
+
+foreach(explode(PHP_EOL, $mime_types_raw) as $line){
+	if(0 === strpos($line, '#')){
+		continue;
+	}
+	$extensions = explode(" ", substr($line, strrpos($line, "\t") + 1));
+	$mime_type = substr($line, 0, strpos($line, "\t"));
+	foreach($extensions as $extension){
+		$mime_types_by_extension[$extension] = $mime_type;
+	}
+	$extensions_by_mime_type[$mime_type][] = $extension;
+}
+
+// a few more common ones
+$local_mime_types = array(
+	'text/x-scss' => 'scss',
+	'text/x-sass' => 'sass',
+	'text/x-less' => 'less',
+	'text/x-php' => 'php',
+	'text/x-ruby' => 'rb',
+	'text/x-markdown' => 'md',
+	'text/x-yaml' => 'yml',
+	'text/x-lock' => 'lock',
+	'application/gzip' => 'gz',
+	'text/plain' => 'po',
+	'text/plain' => 'mo',
+	'application/json' => 'map',
+	'application/json' => 'wie',
+	'application/octet-stream' => 'dat',
+);
+
+foreach($local_mime_types as $mime_type => $extension){
+	$mime_types_by_extension[$extension] = $mime_type;
+	$extensions_by_mime_type[$mime_type][] = $extension;
+}
+
+ksort($mime_types_by_extension);
+ksort($extensions_by_mime_type);
+
+file_put_contents(realpath(__DIR__ . '/../var') . '/mime_types_by_extension.json', json_encode($mime_types_by_extension, JSON_PRETTY_PRINT));
+file_put_contents(realpath(__DIR__ . '/../var') . '/extensions_by_mime_type.json', json_encode($extensions_by_mime_type, JSON_PRETTY_PRINT));
+
+exit(0);
+

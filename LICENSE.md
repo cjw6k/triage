@@ -1,4 +1,4 @@
-Copyright (c) 2018 Christopher James Willcock
+Copyright (c) 2018 by the contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -1,7 +1,12 @@
 #!/usr/bin/env php
 <?php
 
+require_once __DIR__ . '/../app/bootstrap.php';
 
-echo "usage: \n";
+$version = "0.1.0";
 
-exit(1);
+$status = (function($triage){
+	return $triage->run();
+})(new Triage\Triage($version, $argv));
+
+exit($status);

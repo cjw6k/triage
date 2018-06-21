@@ -28,7 +28,7 @@ $DIR/phpcs-default "$@" --tab-width=4
 ```
 
 ## Acknowledgements
-Everyone at [#IndieWebCamp](https://indieweb.org/)!
+Everyone at [#IndieWebCamp](https://indieweb.org/)!  
 The team behing [microformats](http://microformats.org/)!
 
 ## License

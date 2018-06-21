@@ -1,0 +1,497 @@
+#!/usr/bin/env php
+<?php
+
+// @TODO: actual updating
+
+/* When the initial dev is complete, uncomment after adjusting to check if it's freshy
+if(file_exists(__DIR__ . '/../var/microformats.json')){
+	exit(0);
+}
+*/
+
+$microformats = array(
+	'microformats2' => array(
+		'h-adr' => array(
+			'updates' => 'microformats\adr',
+			'nature' => 'structured locations such as addresses, physical and/or postal',
+			'root' => 'h-adr',
+			'properties' => array(
+				'p-post-office-box',
+				'p-extended-address',
+				'p-street-address',
+				'p-locality',
+				'p-region',
+				'p-postal-code',
+				'p-country-name',
+				'p-label',
+				'p-geo',
+				'p-latitude' ,
+				'p-longitude',
+				'p-altitude',
+			),
+		),
+		'h-card' => array(
+			'updates' => 'microformats\hCard',
+			'nature' => 'people and organizations',
+			'root' => 'h-card',
+			'properties' => array(
+				'p-name',
+				'p-honorific-prefix',
+				'p-given-name',
+				'p-additional-name',
+				'p-family-name',
+				'p-sort-string',
+				'p-honorific-suffix',
+				'p-nickname',
+				'u-email',
+				'u-logo',
+				'u-photo',
+				'u-url',
+				'u-uid',
+				'p-category',
+				'p-adr',
+				'p-post-office-box',
+				'p-extended-address',
+				'p-street-address',
+				'p-locality',
+				'p-region',
+				'p-postal-code',
+				'p-country-name',
+				'p-label',
+				'p-geo',
+				'u-geo',
+				'p-latitude',
+				'p-longitude',
+				'p-altitude',
+				'p-tel',
+				'p-note',
+				'dt-bday',
+				'u-key',
+				'p-org',
+				'p-job-title',
+				'p-role',
+				'u-impp',
+				'p-sex',
+				'p-gender-identity',
+				'dt-anniversary',
+			),
+			'reserved' => array(
+				'p-organization-name',
+				'p-organization-unit',
+				'p-tz',
+				'dt-rev',
+			),
+		),
+		'h-entry' => array(
+			'updates' => 'microformats\hAtom',
+			'nature' => 'syndicatable content such as blog posts, notes, articles, comments, photos and similar',
+			'root' => 'h-entry',
+			'properties' => array(
+				'p-name',
+				'p-summary',
+				'e-content',
+				'dt-published',
+				'dt-updated',
+				'p-author',
+				'p-category',
+				'u-url',
+				'u-uid',
+				'p-geo',
+				'p-latitude',
+				'p-longitude',
+			),
+			'deprecated' => array(
+				'p-entry-title' => 'p-name',
+				'p-entry-summary' => 'p-summary',
+				'e-entry-content' => 'e-content',
+			),
+			'proposed' => array(
+				'u-photo',
+				'u-audio',
+				'u-video',
+				'u-in-reply-to',
+			),
+		),
+		'h-event' => array(
+			'updates' => 'microformats\hCalendar',
+			'nature' => 'events',
+			'root' => 'h-event',
+			'properties' => array(
+				'p-name',
+				'p-summary',
+				'dt-start',
+				'dt-end',
+				'dt-duration',
+				'p-description',
+				'u-url',
+				'p-category',
+				'p-location',
+				'p-geo',
+				'p-latitude',
+				'p-longitude',
+			),
+		),
+		'h-feed' => array(),
+		'h-geo' => array(
+			'updates' => 'microformats\geo',
+			'nature' => 'WGS84 geophysical coordinates',
+			'root' => 'h-geo',
+			'properties' => array(
+				'p-latitude',
+				'p-longitude',
+				'p-altitude',		
+			),
+		),
+		'h-item' => array(
+			'nature' => 'the item of an h-review or h-product',
+			'root' => 'h-item',
+			'properties' => array(
+				'p-name',
+				'u-photo',
+				'u-url',		
+			),
+		),
+		'h-listing' => array(),
+		'h-product' => array(
+			'updates' => 'microformats\hProduct',
+			'nature' => 'products',
+			'root' => 'h-product',
+			'properties' => array(
+				'p-name',
+				'u-photo',
+				'p-brand',
+				'p-category',
+				'e-description',
+				'u-url',
+				'u-identifier',
+				'p-review',
+				'p-price',
+			),
+		),
+		'h-recipe' => array(
+			'updates' => 'microformats\hRecipe',
+			'nature' => 'food recipes',
+			'root' => 'h-recipe',
+			'properties' => array(
+				'p-name',
+				'p-ingredient',
+				'p-yield',
+				'e-instructions',
+				'dt-duration',
+				'u-photo',
+			),
+			'experimental' => array(
+				'p-summary',
+				'p-author',
+				'dt-published',
+				'p-nutrition',
+			),
+		),
+		'h-resume' => array(
+			'updates' => 'microformats\hResume',
+			'nature' => 'resumes',
+			'root' => 'h-resume',
+			'properties' => array(
+				'p-summary',
+				'p-contact',
+				'p-education',
+				'p-experience',
+				'p-skill',
+				'p-affiliation',
+			),
+		),
+		'h-review' => array(
+			'updates' => 'microformats\hReview',
+			'nature' => 'review',
+			'root' => 'h-review',
+			'properties' => array(
+				'p-name',
+				'p-item',
+				'p-reviewer',
+				'dt-reviewed',
+				'p-rating',
+				'p-best',
+				'p-worst',
+				'e-description',
+				'p-category',
+				'u-url',
+			),
+		),
+		'h-review-aggregate' => array(
+			'updates' => 'microformats\hreview-aggregate',
+			'nature' => 'aggregate reviews of a single item',
+			'root' => 'h-review-aggregate',
+			'properties' => array(
+				'p-name',
+				'p-item',
+				'p-rating',
+				'p-best',
+				'p-worst',
+				'p-count',
+				'p-votes',
+				'p-category',
+				'u-url',
+			),
+		),
+	),
+	'rel' => array(
+		'rel-author' => array(
+			'nature' => 'an article or a post to a page or site representing its author',
+		),
+		'rel-enclosure' => array(
+			'nature' => 'the destination of the hyperlink is intended to be downloaded and cached'
+		),
+		'rel-license' => array(
+			'nature' => 'the content copyright license'
+		),
+		'rel-nofollow' => array(
+			'nature' => 'the destination of the hyperlink should not be afforded any additional weight or ranking by link-ranking algorithms'
+		),
+		'rel-tag' => array(
+			'nature' => 'the destination of the hyperlink is an author-designated tag (keyword; subject) for the current page'
+		),
+		'XFN' => array(
+			'nature' => 'human relationship representation'
+		),
+	),
+	'microformats' => array(
+		'adr' => array(
+			'updated_by' => 'microformats2\h-adr',
+			'nature' => 'structured locations such as addresses, physical and/or postal',
+			'root' => 'adr',
+			'properties' => array(
+				'post-office-box',
+				'extended-address',
+				'street-address',
+				'locality',
+				'region',
+				'postal-code',
+				'country-name',
+			),
+		),
+		'hCard' => array(
+			'updated_by' => 'microformats2\h-card',
+			'nature' => '',
+			'root' => 'vcard',
+			'properties' => array(
+				'fn',
+				'honorific-prefix',
+				'given-name',
+				'additional-name',
+				'family-name',
+				'honorific-suffix',
+				'nickname',
+				'email',
+				'logo',
+				'photo',
+				'url',
+				'uid',
+				'category',
+				'adr',
+				'extended-address',
+				'street-address',
+				'locality',
+				'region',
+				'postal-code',
+				'country-name',
+				'label',
+				'geo',
+				'latitude',
+				'longitude',
+				'tel',
+				'note',
+				'bday',
+				'key',
+				'org',
+				'organization-name',
+				'organization-unit',
+				'title',
+				'role',
+			),
+			'reserved' => array(
+				'tz',
+				'rev',
+			),
+		),
+		'hAtom' => array(
+			'updated_by' => 'microformats2\h-entry',
+			'nature' => 'syndicatable content such as blog posts, notes, articles, comments, photos and similar',
+			'root' => 'hentry',
+			'properties' => array(
+				'entry-title',
+				'entry-summary',
+				'entry-content',
+				'published',
+				'updated',
+				'author',
+				'category',
+				'geo',
+				'latitude',
+				'longitude',				
+			),
+		),
+		'hCalendar' => array(
+			'updated_by' => 'microformats2\h-event',
+			'nature' => 'event',
+			'root' => 'ventry',
+			'properties' => array(
+				'summary',
+				'dtstart',
+				'dtend',
+				'duration',
+				'description',
+				'url',
+				'category',
+				'location',
+				'geo',
+				'latitude',
+				'longitude',			
+			),
+		),
+		'geo' => array(
+			'updated_by' => 'microformats2\h-geo',
+			'nature' => 'WGS84 geophysical coordinates',
+			'root' => 'geo',
+			'properties' => array(
+				'latitude',
+				'longitude',			
+			),
+		),
+		'hProduct' => array(
+			'updated_by' => 'microformats2\h-product',
+			'nature' => 'products',
+			'root' => 'hproduct',
+			'properties' => array(
+				'fn',
+				'photo',
+				'brand',
+				'category',
+				'description',
+				'identifier',
+				'url',
+				'review',
+				'price',				
+			),
+		),
+		'hRecipe' => array(
+			'updated_by' => 'microformats2\h-recipe',
+			'nature' => 'food recipe',
+			'root' => 'hrecipe',
+			'properties' => array(
+				'fn',
+				'ingredient',
+				'yield',
+				'instructions',
+				'duration',
+				'photo',
+				'summary',
+				'author',
+				'nutrition',
+			),
+		),
+		'hResume' => array(
+			'updated_by' => 'microformats2\h-resume',
+			'nature' => 'resumes',
+			'root' => 'hresume',
+			'properties' => array(
+				'summary',
+				'contact',
+				'education',
+				'experience',
+				'skill',
+				'affiliation',
+			),
+		),
+		'hReview' => array(
+			'updated_by' => 'microformats2\h-review',
+			'nature' => 'reviews',
+			'root' => 'hreview',
+			'properties' => array(
+				'summary',
+				'fn',
+				'photo',
+				'url',
+				'reviewer',
+				'dtreviewed',
+				'rating',
+				'best',
+				'worst',
+				'description',
+			),
+		),
+		'hreview-aggregate' => array(
+			'updated_by' => 'microformats2\h-review-aggregate',
+			'nature' => 'aggregate reviews of a single item',
+			'root' => 'hreview-aggregate',
+			'properties' => array(
+				'summary',
+				'fn',
+				'photo',
+				'url',
+				'rating',
+				'best',
+				'worst',
+				'count',
+				'votes',			
+			),
+		),
+	),
+);
+
+file_put_contents(realpath(__DIR__ . '/../var') . '/microformats.json', json_encode($microformats, JSON_PRETTY_PRINT));
+
+$class_tokens_to_vocabularies = array();
+$vocabulary_class_tokens = array();
+$generation_class_tokens = array();
+
+foreach($microformats as $generation => $vocabularies){
+	foreach($vocabularies as $vocabulary_name => $vocabulary_parameters){
+		foreach($vocabulary_parameters as $parameter_key => $parameter_mixed_data){
+			if('root' == $parameter_key){
+				$class_tokens_to_vocabularies[$parameter_mixed_data]['root'] = array(
+					/*'generation' =>*/ $generation, 
+					/*'specification' =>*/ $vocabulary_name
+				);
+				$vocabulary_class_tokens[$vocabulary_name][] = $parameter_mixed_data;
+				$generation_class_tokens[$generation][$parameter_mixed_data]['root'] = $vocabulary_name;
+			}
+			if('properties' == $parameter_key){
+				foreach($parameter_mixed_data as $property){
+					$class_tokens_to_vocabularies[$property]['property'][] = array(
+						/*'generation' =>*/ $generation, 
+						/*'specification' =>*/ $vocabulary_name
+					);
+					$vocabulary_class_tokens[$vocabulary_name][] = $property;
+					$generation_class_tokens[$generation][$property][] = $vocabulary_name;
+				}
+			}
+		}
+	}
+}
+
+ksort($class_tokens_to_vocabularies);
+ksort($vocabulary_class_tokens);
+ksort($generation_class_tokens);
+foreach($generation_class_tokens as &$tokens_reference){
+	ksort($tokens_reference);
+}
+
+file_put_contents(realpath(__DIR__ . '/../var') . '/microformats_class_tokens_to_vocabularies.json', json_encode($class_tokens_to_vocabularies, JSON_PRETTY_PRINT));
+file_put_contents(realpath(__DIR__ . '/../var') . '/microformats_vocabulary_class_tokens.json', json_encode($vocabulary_class_tokens, JSON_PRETTY_PRINT));
+file_put_contents(realpath(__DIR__ . '/../var') . '/microformats_generation_class_tokens.json', json_encode($generation_class_tokens, JSON_PRETTY_PRINT));
+
+
+/*echo implode(PHP_EOL, array_keys($class_tokens_to_vocabularies)), "\n";
+echo "------\n";
+foreach($vocabulary_class_tokens as $vocabulary_name => $properties){
+	echo "\n=", $vocabulary_name, "=\n";
+	echo implode(PHP_EOL, $properties), "\n";
+}
+foreach($generation_class_tokens as $generation => $tokens){
+	echo "\n=", $generation, "=\n";
+	echo implode(PHP_EOL, array_keys($tokens)), "\n";
+}
+*/
+
+exit(0);
+

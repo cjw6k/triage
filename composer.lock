@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "carica/phpcss",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ThomasWeinert/PhpCss.git",
-                "reference": "22959c856555ecd8bf630502686e2423939734eb"
+                "reference": "05de8dfa64194260a87a677996c2d7908871c6ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ThomasWeinert/PhpCss/zipball/22959c856555ecd8bf630502686e2423939734eb",
-                "reference": "22959c856555ecd8bf630502686e2423939734eb",
+                "url": "https://api.github.com/repos/ThomasWeinert/PhpCss/zipball/05de8dfa64194260a87a677996c2d7908871c6ba",
+                "reference": "05de8dfa64194260a87a677996c2d7908871c6ba",
                 "shasum": ""
             },
             "require": {
@@ -43,7 +43,7 @@
                 }
             ],
             "description": "An css selector parser and converter",
-            "time": "2018-04-12T20:17:33+00:00"
+            "time": "2018-06-20T11:45:10+00:00"
         },
         {
             "name": "sabberworm/php-css-parser",

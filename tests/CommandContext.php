@@ -17,6 +17,15 @@ class CommandContext implements Context, SnippetAcceptingContext
 	private $_command_exit_status;
 
 	/**
+	 * @Given My current working directory is the package root directory
+	 */
+	public function myCurrentWorkingDirectoryIsThePackageRootDirectory()
+	{
+		chdir(PACKAGE_ROOT);
+		assertEquals(realpath(PACKAGE_ROOT), getcwd());
+	}
+
+	/**
 	 * @Given I run the command :command
 	 */
 	public function iRunTheCommand($command)

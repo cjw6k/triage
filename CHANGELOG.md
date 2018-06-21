@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - test runner, run-tests.sh
 - detailed phpcs tweak for tab indenting
 - behat context for command line stuffs
+- scripts to refresh local mime-types and microformats data
+- setup composer to run the refresh scripts on install and update
 - usage feature
-- version feature
 - help feature
+- version feature

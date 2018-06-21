@@ -4,6 +4,8 @@ Feature: The usage information is displayed to help the user figure out command 
 	I muse see usage information
 
 	Scenario: Supplying no arguments on the command line
-		Given I run the command "bin/triage"
-		Then I should see "usage"
+		Given My current working directory is the package root directory
+		When I run the command "bin/triage"
+		Then I should see "Usage: triage [OPTION]... SOURCE"
+		And I should see "Try 'triage --help' for more information."
 		And the exit status should be 1
