@@ -61,7 +61,7 @@ class Analyzer
 		$this->_analysis->setPickerStatus($status);
 
 		while($this->_picker->hasPicks()){
-			$this->_analyze($this->_picker->nextPick());
+			$this->_analyzeFile($this->_picker->nextPick());
 		}
 
 		return $this->_analysis;
@@ -74,7 +74,7 @@ class Analyzer
 	 *
 	 * @return void;
 	 */
-	private function _analyze(array $file)
+	private function _analyzeFile(array $file)
 	{
 		switch($file['mime_type']){
 			default:

@@ -38,11 +38,5 @@ class PickerSpec extends ObjectBehavior
 				)
 			);
 		}
-	}
-	
-	// function it_determines_mime_types_of_picked_files_by_extension()
-	// {
-		// $this->analyze('tests/fixtures/analyzer-test/test.txt')->shouldBe(array(''));
-	// }	
-	
+	}	
 }
