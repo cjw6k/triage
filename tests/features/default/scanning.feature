@@ -1,7 +1,7 @@
-Feature: Sources are scanned for semantic compatibility
+Feature: Sources are scanned for later processing
 	In order to discover semantic compatability in sources
 	As a user
-	I must scan a source
+	I must scan sources
 
 	Scenario Outline: Scanning a single source file
 		Given My current working directory is the package root directory
@@ -22,7 +22,7 @@ Feature: Sources are scanned for semantic compatibility
 			|  var/tmp/test.dat  |  a test this is  |  application/octet-stream  |  test.dat  |
 			|  var/tmp/test.md   |  is this a test  |  text/x-markdown           |  test.md   |
 	
-	Scenario: Scanning a directory with multiple files
+	Scenario: Scanning a directory with multiple source files
 		Given My current working directory is the package root directory
 		When I run triage with argument "tests/fixtures/picker-test/directory-with-20-files"
 		Then I should see "1 directory"
@@ -30,7 +30,7 @@ Feature: Sources are scanned for semantic compatibility
 		And I should see "text/plain"
 		And the exit status should be 0
 		
-	Scenario: Scanning a directory with subdirectories
+	Scenario: Scanning a directory with subdirectories and source files
 		Given My current working directory is the package root directory
 		When I run triage with argument "tests/fixtures/picker-test/directory-with-subdirectories-and-files"
 		Then I should see "4 directories"
