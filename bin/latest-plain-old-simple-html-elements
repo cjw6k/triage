@@ -1,0 +1,73 @@
+#!/usr/bin/env php
+<?php
+
+// @TODO: actual updating
+
+/* When the initial dev is complete, uncomment after adjusting to check if it's freshy
+if(file_exists(__DIR__ . '/../var/plain-old-simple-html-elements.json')){
+        exit(0);
+}
+*/
+
+$posh = array(
+	// Main root
+	'html',
+
+	// Document metadata
+	// - these should not appear in stylesheets
+	'link', 'meta', 'style', 'title',
+
+	// Sectioning root
+	'body',
+
+	// Content Sectioning
+	'address', 'article', 'aside', 'footer', 'header',
+	'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hgroup',
+	'nav', 'section',
+
+	// Text content
+	'blockquote', 'dd', 'dir', 'div', 'dl', 'dt', 
+	'figcaption', 'figure', 'hr', 'li', 'main',
+	'ol', 'p', 'pre', 'ul',
+
+	// Inline text semantics
+	'a', 'abbr', 'b', 'bdi', 'bdo', 'br', 'cite', 'code',
+	'data', 'dfn', 'em', 'i', 'kbd', 'mark', 'q', 'rp', 'rt',
+	'rtc', 'ruby', 's', 'samp', 'small', 'span', 'strong',
+	'sub', 'sup', 'time', /*'tt',*/ 'u', 'var', 'wbr',
+
+	// Image and multimedia
+	'area', 'audio', 'img', 'map', 'track', 'video',
+
+	// Embedded content
+	/*'applet',*/ 'embed', 'iframe', /*'noembed',*/ 'object',
+	'param', 'picture', 'source',
+
+	// Scripting
+	'canvas', 'noscript', 'script',
+
+	// Demarcating edits
+	'del', 'ins',
+
+	// Table content
+	'caption', 'col', 'colgroup', 'table', 'tbody', 'td',
+	'tfoot', 'th', 'thead', 'tr',
+
+	// Forms
+	'button', 'datalist', 'fieldset', 'form', 'input', 'label',
+	'legend', 'meter', 'optgroup', 'option', 'output', 'progress',
+	'select', 'textarea',
+
+	// Interactive elements
+	'details', 'dialog', 'menu', /*'menuitem',*/ 'summary',
+
+	// Web contents
+	/*'content',*/ /*'element',*/ /*'shadow',*/ 'slot', 'template',
+);
+
+$posh = array_flip($posh);
+ksort($posh);
+
+file_put_contents(realpath(__DIR__ . '/../var') . '/plain_old_simple_html_elements.json', json_encode($posh, JSON_PRETTY_PRINT));
+
+exit(0);

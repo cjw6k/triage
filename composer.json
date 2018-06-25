@@ -46,13 +46,15 @@
     	"bin/triage"
     ],
     "scripts": {
-        "post-install-cmd": [
-	  "bin/latest-mime-types",
-	  "bin/latest-microformats"
+	"post-install-cmd": [
+		"bin/latest-mime-types",
+		"bin/latest-microformats",
+		"bin/latest-plain-old-simple-html-elements"
 	],
         "post-update-cmd": [
-	   "bin/latest-mime-types",
-	   "bin/latest-microformats"
+		"bin/latest-mime-types",
+		"bin/latest-microformats",
+		"bin/latest-plain-old-simple-html-elements"
 	]
     }
 }

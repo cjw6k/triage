@@ -16,7 +16,7 @@ declare(strict_types=1);
 namespace Triage\Triage;
 
 /**
- * The Analyzer class scans all files in SOURCE and makes an Analysis
+ * Analyzer scans all files in SOURCE and makes an Analysis
  */
 class Analyzer
 {
@@ -36,6 +36,13 @@ class Analyzer
 	private $_analysis = null;
 
 	/**
+	 * The collection of tags that make up Plain Old Simple HTML (POSH)
+	 *
+	 * @var mixed[]
+	 */
+	private $_plain_old_simple_html = array();
+
+	/**
 	 * Capture picker component reference
 	 *
 	 * @param Picker $picker Picker component.
@@ -43,6 +50,7 @@ class Analyzer
 	public function __construct(Picker $picker)
 	{
 		$this->_picker = $picker;
+		$this->_plain_old_simple_html = json_decode(file_get_contents(PACKAGE_ROOT . '/var/plain_old_simple_html_elements.json'));
 	}
 
 	/**
@@ -72,11 +80,15 @@ class Analyzer
 	 *
 	 * @param array $file The file to analyze.
 	 *
-	 * @return void;
+	 * @return void
 	 */
 	private function _analyzeFile(array $file)
 	{
 		switch($file['mime_type']){
+			case 'text/css':
+				$this->_analysis->addCssFile((new Analyzer\Css($file, $this->_plain_old_simple_html))->analyze());
+				break;
+
 			default:
 				$this->_analysis->addUnsupportedFile($file);
 		}

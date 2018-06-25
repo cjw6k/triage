@@ -16,8 +16,8 @@ declare(strict_types=1);
 namespace Triage\Triage;
 
 /**
- * The Analysis class is a structure account of the semantic compatibility of
- * the files in SOURCE.
+ * The Analysis class is a structured account of the syntax accuracy,
+ * and semantic compatibility of the files in SOURCE.
  */
 class Analysis
 {
@@ -30,8 +30,13 @@ class Analysis
 	private $_package = array(
 		'directories' => array(),
 		'files' => 0,
+		'notices' => 0,
 		'errors' => 0,
-		'warnings' => 0
+		'warnings' => 0,
+		'css' => array(),
+		'js' => array(),
+		'html' => array(),
+		'php' => array(),
 	);
 
 	/**
@@ -94,6 +99,25 @@ class Analysis
 	public function getDetails() : array
 	{
 		return $this->_details;
+	}
+
+	/**
+	 * Recorded the detailed analysis of a file with a text/css MIME type
+	 *
+	 * @param mixed[] $file The detailed analysis.
+	 *
+	 * @return void
+	 */
+	public function addCssFile(array $file)
+	{
+		$this->_details[$file['mime_type']][$file['scan_path']] = array(
+			//'stats'     => $file['file_stats'],
+			'selectors' => $file['selectors_by_line'],
+			//'imports'   => $file['imports_by_line'],
+			//'fonts'     => $file['fonts_by_line'],
+			'syntax'    => $file['syntax'],
+			'semantics' => $file['semantics'],
+		);
 	}
 
 }
