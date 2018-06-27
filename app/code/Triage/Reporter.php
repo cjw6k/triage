@@ -21,6 +21,15 @@ namespace Triage\Triage;
 class Reporter
 {
 
+	private $_show_cows = false;
+	private $_show_all_files = false;
+
+	public function __construct($show_all_files, $show_cows)
+	{
+		$this->_show_all_files = $show_all_files;
+		$this->_show_cows = $show_cows;
+	}
+
 	/**
 	 * Output a report from an Analysis
 	 *
@@ -36,7 +45,13 @@ class Reporter
 		$files = $analysis->getFileScanCount();
 		echo "$files file", $this->_pluralize($files), PHP_EOL;
 
-		foreach($analysis->getDetails() as $mime_type => $files_of_type){
+		$details = $analysis->getDetails();
+		ksort($details);
+		
+		foreach($details as $mime_type => $files_of_type){
+			if($this->_skipMimeType($mime_type)){
+				continue;
+			}
 			$this->_showMimeTypeDetails($mime_type);
 			switch($mime_type){
 				case 'text/css':
@@ -63,6 +78,21 @@ class Reporter
 		return (1 == $count) ? $singular : $plural;
 	}
 
+	private function _skipMimeType($mime_type){
+		if($this->_show_all_files){
+			return false;
+		}
+		
+		switch($mime_type){
+			case 'text/css':
+				return false;
+				break;
+			
+			default:
+				return true;
+		}
+	}
+	
 	/**
 	 * Output a formatted string with the given MIME type
 	 *
@@ -72,7 +102,7 @@ class Reporter
 	 */
 	private function _showMimeTypeDetails(string $mime_type)
 	{
-		echo PHP_EOL, "= $mime_type =", PHP_EOL;
+		echo PHP_EOL, "===== $mime_type =====", PHP_EOL;
 	}
 
 	/**
@@ -98,37 +128,16 @@ class Reporter
 	 */
 	private function _showCssFileAnalyses(array $files_of_type)
 	{
+		$css_reporter = new Reporter\Css($this->_show_cows);
 		// later: new Reporter\Table, etc, etc
 		foreach($files_of_type as $scan_path => $analysis){
-			echo " $scan_path", PHP_EOL;
-
-			$selector_count = 0;
-			// foreach($analysis['selectors'] as $section => $lines){
-			foreach($analysis['selectors'] as $lines){
-				// foreach($lines as $line_number => $selectors){
-				foreach($lines as $selectors){
-					$selector_count += count($selectors);
-				}
-			}
-			echo " - Selectors: $selector_count", PHP_EOL;
-
-			echo " - Syntax:", PHP_EOL;
-			echo "   - Notices: ", count($analysis['syntax']['notices']), PHP_EOL;
-			echo "   - Warnings: ", count($analysis['syntax']['warnings']), PHP_EOL;
-			echo "   - Errors: ", count($analysis['syntax']['errors']), PHP_EOL;
-
-			echo " - Semantics:", PHP_EOL;
-
-			$posh_count = 0;
-			if(0 < $analysis['semantics']['posh']){
-				foreach($analysis['semantics']['posh'] as $lines){
-					$posh_count += count($lines);
-				}
-			}
-			echo "   - POSH: ", $posh_count, PHP_EOL;
-
-			echo PHP_EOL;
+			echo "+", str_repeat('-', strlen($scan_path) + 4), "+", PHP_EOL;
+			echo "|  $scan_path  |", PHP_EOL;
+			echo "+", str_repeat('-', strlen($scan_path) + 4), "+", PHP_EOL;
+			
+			$css_reporter->report($analysis);
 		}
+		$css_reporter->summary();
 	}
 
 }

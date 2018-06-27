@@ -30,3 +30,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - invalid sources feature
 - scanning feature
 - Analyzer, Analysis, Picker, Reporter
+- Css, Ast, Cleaner
+- css analysis - for syntax and POSH semantics

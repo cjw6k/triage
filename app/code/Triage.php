@@ -55,13 +55,34 @@ class Triage
 	 * @var boolean
 	 */
 	private $_show_help = false;
+	
+	/**
+	 * Command line argument --moo
+	 *
+	 * @var boolean
+	 */
+	private $_show_cows = false;
 
 	/**
 	 * Command line argument --version
 	 *
 	 * @var boolean
 	 */
-	private $_show_version = false;
+	private $_show_version = false;	
+	
+	/**
+	 * Command line argument -p, --show-progress
+	 *
+	 * @var boolean
+	 */
+	private $_show_progress = false;
+	
+	/**
+	 * Command line argument --all
+	 *
+	 * @var boolean
+	 */
+	private $_show_all_files = false;
 
 	/**
 	 * Command line argument, source to analyze
@@ -184,6 +205,20 @@ class Triage
 			case '--version':
 				$this->_show_version = true;
 				break;
+				
+			case '-p':
+			case '--show-progress':
+				$this->_show_progress = true;
+				break;
+				
+			case '--moo':
+				$this->_show_cows = true;
+				break;	
+				
+			case '-a':
+			case '--show-all-files':
+				$this->_show_all_files = true;
+				break;
 
 			default:
 				if(null !== $this->_source){
@@ -213,13 +248,15 @@ class Triage
 	{
 		echo $this->_usage_message, PHP_EOL, PHP_EOL;
 		echo "OPTIONS:", PHP_EOL;
-		echo "\t--help\t\tdisplay this help and exit", PHP_EOL;
-		echo "\t--version\toutput version information and exit", PHP_EOL, PHP_EOL;
+		echo "\t-a, --show-all-files\tshow all files scanned no matter which MIME type", PHP_EOL;
+		echo "\t-p, --show-progress\tshow scan and analysis status while running", PHP_EOL;
+		echo "\t--help\t\t\tdisplay this help and exit", PHP_EOL;
+		echo "\t--version\t\toutput version information and exit", PHP_EOL, PHP_EOL;
 		echo "triage is a utility which checks webapp sources", PHP_EOL;
 		echo "for compatibility with microformats semantics", PHP_EOL, PHP_EOL;
 		echo "EXAMPLES:", PHP_EOL;
 		echo "\ttriage style.css", PHP_EOL;
-		echo "\ttriage /var/www/wordpress", PHP_EOL;
+		echo "\ttriage -p /var/www/a6a", PHP_EOL;
 	}
 
 	/**
@@ -293,11 +330,17 @@ class Triage
 	 */
 	private function _initialize()
 	{
+		$monitor = $this->_show_progress ? new Triage\Monitor\Progress() : new Triage\Monitor();
+		
 		$this->_analyzer = new Triage\Analyzer(
-			new Triage\Picker()
+			new Triage\Picker(),
+			$monitor
 		);
 
-		$this->_reporter = new Triage\Reporter();
+		$this->_reporter = new Triage\Reporter(
+			$this->_show_all_files,
+			$this->_show_cows
+		);
 	}
 
 }

@@ -22,11 +22,18 @@ class Analyzer
 {
 
 	/**
-	 * A reference to the picker component
+	 * A reference to the Picker component
 	 *
 	 * @var Picker
 	 */
 	private $_picker = null;
+
+	/**
+	 * A reference to the Monitor component
+	 *
+	 * @var Monitor
+	 */
+	private $_monitor = null;
 
 	/**
 	 * A reference to the analysis component
@@ -47,9 +54,10 @@ class Analyzer
 	 *
 	 * @param Picker $picker Picker component.
 	 */
-	public function __construct(Picker $picker)
+	public function __construct(Picker $picker, Monitor $monitor)
 	{
 		$this->_picker = $picker;
+		$this->_monitor = $monitor;
 		$this->_plain_old_simple_html = json_decode(file_get_contents(PACKAGE_ROOT . '/var/plain_old_simple_html_elements.json'));
 	}
 
@@ -65,11 +73,14 @@ class Analyzer
 		$this->_analysis = new Analysis();
 
 		$status = $this->_picker->scan($source);
+		$this->_monitor->setTotal($status['files']);
 
 		$this->_analysis->setPickerStatus($status);
 
 		while($this->_picker->hasPicks()){
-			$this->_analyzeFile($this->_picker->nextPick());
+			$file = $this->_picker->nextPick();
+			$this->_analyzeFile($file);
+			$this->_monitor->mark($file['scan_path']);
 		}
 
 		return $this->_analysis;

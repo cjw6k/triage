@@ -50,12 +50,12 @@ class Cleaner
 			array(
 				// pseudo-class syntax used for a pseudo-element
 				'/(?<!:)(:(after|backdrop|before|cue|first-letter|first-line|grammar-error|marker|placeholder|selection|slotted|spelling-error))/' => function($match) use ($selector){
-					$this->_pseudoConfusion($match, $selector);
+					$this->_pseudoElementConfusion($match, $selector);
 				},
 
 				// pseudo-element syntax used for a pseduo-class
 				'/::(active|any|any-link|checked|default|defined|dir\(.*\)|disabled|empty|enabled|first|first-child|first-of-type|fullscreen|focus|host|host\(.*\)|host-context\(.*\)|hover|indeterminate|in-range|invalid|lang\(.*\)|last-child|last-of-type|left|link|not\(.*\)|nth-child\(.*\)|nth-last-child\(.*\)|nath-last-of-type\(.*\)|nth-of-type\(.*\)|only-child|only-of-type|optional|out-of-range|read-only|read-write|required|right|root|scope|target|valid|visited)/' => function($match) use ($selector){
-					$this->_pseudoConfusion($match, $selector);
+					$this->_pseudoClassConfusion($match, $selector);
 				},
 
 				// nth-*() parameter of 0, which is syntactically valid but useless and not recognized in \PhpCss (positions start at 1)
@@ -92,22 +92,22 @@ class Cleaner
 				},
 
 				// Experimental pseudo-elements
-				'/::(backdrop|marker|placeholder|spelling-error|grammar-error)/' => function($match) use ($selector){
+				'/::(backdrop|marker|placeholder|spelling-error|grammar-error)[^-0-9a-zA-Z]*$/' => function($match) use ($selector){
 					$this->_experimentalPseudoElement($match, $selector);
 				},
 
 				// Unsupported-in-PhpCss pseudo-elements
-				'/::(cue|selection|slotted)/' => function(){
+				'/::(cue|selection|slotted)[^-0-9a-zA-Z]*$/' => function(){
 					return '';
 				},
 
 				// Experimental pseudo-classes
-				'/:(any-link|dir\(.*\)|fullscreen|host\(.*\)|host-context\(.*\))/' => function($match) use ($selector){
+				'/:(any-link|dir\(.*\)|fullscreen|host\(.*\)|host-context\(.*\))[^-0-9a-zA-Z]*$/' => function($match) use ($selector){
 					$this->_experimentalPseudoClass($match, $selector);
 				},
 
 				// Unsupported-in-PhpCss pseudo-classes
-				'/:(default|defined|first|host|in-range|indeterminate|invalid|left|optional|out-of-range|read-only|read-write|required|right|scope|valid)/' => function(){
+				'/:(default|defined|first|host|in-range|indeterminate|invalid|left|optional|out-of-range|read-only|read-write|required|right|scope|valid)[^-0-9a-zA-Z]*$/' => function(){
 					return '';
 				},
 			),
@@ -115,7 +115,7 @@ class Cleaner
 			-1,
 			$replacement_count
 		);
-
+		
 		return $replacement_count;
 	}
 
@@ -130,21 +130,41 @@ class Cleaner
 	}
 
 	/**
-	 * Correct syntax where pseudo-confusion is the trouble
+	 * Correct syntax where a pseudo-element has pseudo-class syntax
 	 *
 	 * @param string[] $match    The section of selector that has the trouble.
 	 * @param string   $selector The selector before applying this replacement.
 	 *
 	 * @return string The replacement string for that section of the selector.
 	 */
-	private function _pseudoConfusion(array $match, string $selector) : string
+	private function _pseudoElementConfusion(array $match, string $selector) : string
 	{
-		return $this->_recordReplacement(
-			'warnings/psuedoconfusion',
-			$selector,
-			$match[0],
-			":{$match[0]}"
-		);
+		return ":{$match[0]}";
+		// return $this->_recordReplacement(
+			// 'warnings/pseudo-element-confusion',
+			// $selector,
+			// $match[0],
+			// ":{$match[0]}"
+		// );
+	}
+	
+	/**
+	 * Correct syntax where a pseudo-class has pseudo-element syntax
+	 *
+	 * @param string[] $match    The section of selector that has the trouble.
+	 * @param string   $selector The selector before applying this replacement.
+	 *
+	 * @return string The replacement string for that section of the selector.
+	 */
+	private function _pseudoClassConfusion(array $match, string $selector) : string
+	{
+		return ":{$match[0]}";
+		// return $this->_recordReplacement(
+			// 'warnings/pseudo-class-confusion',
+			// $selector,
+			// $match[0],
+			// ":{$match[0]}"
+		// );
 	}
 
 	/**
@@ -319,7 +339,7 @@ class Cleaner
 	 */
 	public function getCleanedSelector() : string
 	{
-		return $this->_selector;
+		return trim($this->_selector);
 	}
 
 	/**

@@ -10,11 +10,12 @@ Feature: The help information is displayed to provide a listing of all the comma
 		And I should see "triage is a utility which checks webapp sources"
 		And I should see "for compatibility with microformats semantics"
 		And I should see "OPTIONS:"
-		And I should see "	--help		display this help and exit"
-		And I should see "	--version	output version information and exit"
+		And I should see "	-p, --show-progress	show scan and analysis status while running"
+		And I should see "	--help			display this help and exit"
+		And I should see "	--version		output version information and exit"
 		And I should see "EXAMPLES:"
 		And I should see "	triage style.css"
-		And I should see "	triage /var/www/wordpress"
+		And I should see "	triage -p /var/www/a6a"
 		And the exit status should be 0
 
 	Scenario: Supplying --help argument with other valid arguments on the command line 

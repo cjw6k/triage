@@ -203,11 +203,11 @@ class Css
 	 * Consider an @rule-set from the parse tree
 	 *
 	 * @param object $rule_set       The @rule-set from the parse tree.
-	 * @param object $css_list_class The class of this @rule-set.
+	 * @param string $css_list_class The class of this @rule-set.
 	 *
 	 * @return void
 	 */
-	private function _atRuleSet(object $rule_set, object $css_list_class)
+	private function _atRuleSet(object $rule_set, string $css_list_class)
 	{
 		switch($rule_set->atRuleName()){
 			case 'font-face':
@@ -242,13 +242,13 @@ class Css
 	 * Consider an @rule-block-list from the parse tree
 	 *
 	 * @param object $block_list     The block list from the parse tree.
-	 * @param object $css_list_class The class of this block list.
+	 * @param string $css_list_class The class of this block list.
 	 *
 	 * @throws \Exception Thrown when an block list class with that has no defined interpretation here, is encountered.
 	 *
 	 * @return void
 	 */
-	private function _atRuleBlockList(object $block_list, object $css_list_class)
+	private function _atRuleBlockList(object $block_list, string $css_list_class)
 	{
 		foreach($block_list->getContents() as $css_list_item){
 			switch(get_class($css_list_item)){

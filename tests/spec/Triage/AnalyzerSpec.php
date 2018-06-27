@@ -8,10 +8,11 @@ use Prophecy\Argument;
 
 class AnalyzerSpec extends ObjectBehavior
 {
-	function let($picker)
+	function let($picker, $monitor)
 	{
 		$picker->beADoubleOf('\Triage\Triage\Picker');
-		$this->beConstructedWith($picker);
+		$monitor->beADoubleOf('\Triage\Triage\Monitor');
+		$this->beConstructedWith($picker, $monitor);
 	}
 	
     function it_is_initializable()
@@ -21,7 +22,10 @@ class AnalyzerSpec extends ObjectBehavior
 	
 	function it_provides_an_analysis_after_analyzing()
 	{
-		$this->beConstructedWith(new \Triage\Triage\Picker());
+		$this->beConstructedWith(
+			new \Triage\Triage\Picker(),
+			new \Triage\Triage\Monitor()
+		);
 		$this->analyze('tests/fixtures/analyzer-test/test.txt')->shouldHaveType(\Triage\Triage\Analysis::class);
 	}
 }
