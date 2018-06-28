@@ -49,13 +49,15 @@ class Cleaner
 		$this->_selector = preg_replace_callback_array(
 			array(
 				// pseudo-class syntax used for a pseudo-element
-				'/(?<!:)(:(after|backdrop|before|cue|first-letter|first-line|grammar-error|marker|placeholder|selection|slotted|spelling-error))/' => function($match) use ($selector){
-					$this->_pseudoElementConfusion($match, $selector);
+				'/(?<!:)(:(after|backdrop|before|cue|first-letter|first-line|grammar-error|marker|placeholder|selection|slotted|spelling-error))/' => function($match){
+					//$this->_pseudoElementConfusion($match, $selector);
+					return ":{$match[1]}";
 				},
 
 				// pseudo-element syntax used for a pseduo-class
-				'/::(active|any|any-link|checked|default|defined|dir\(.*\)|disabled|empty|enabled|first|first-child|first-of-type|fullscreen|focus|host|host\(.*\)|host-context\(.*\)|hover|indeterminate|in-range|invalid|lang\(.*\)|last-child|last-of-type|left|link|not\(.*\)|nth-child\(.*\)|nth-last-child\(.*\)|nath-last-of-type\(.*\)|nth-of-type\(.*\)|only-child|only-of-type|optional|out-of-range|read-only|read-write|required|right|root|scope|target|valid|visited)/' => function($match) use ($selector){
-					$this->_pseudoClassConfusion($match, $selector);
+				'/::(active|any|any-link|checked|default|defined|dir\(.*\)|disabled|empty|enabled|first|first-child|first-of-type|fullscreen|focus|host|host\(.*\)|host-context\(.*\)|hover|indeterminate|in-range|invalid|lang\(.*\)|last-child|last-of-type|left|link|not\(.*\)|nth-child\(.*\)|nth-last-child\(.*\)|nath-last-of-type\(.*\)|nth-of-type\(.*\)|only-child|only-of-type|optional|out-of-range|read-only|read-write|required|right|root|scope|target|valid|visited)/' => function($match){
+					//$this->_pseudoClassConfusion($match, $selector);
+					return ":{$match[1]}";
 				},
 
 				// nth-*() parameter of 0, which is syntactically valid but useless and not recognized in \PhpCss (positions start at 1)
@@ -71,9 +73,9 @@ class Cleaner
 					$this->_badCharacters($match, $selector);
 				},
 
-				// quoted a classname in the argument to a :not, as if it was a string literal
-				"/:not\('\.(.+)'\)/" => function ($match) use ($selector){
-					$this->_quotedClassname($match, $selector);
+				// quoted a selector in the argument to a negation pseudo-class, as if it was a string literal
+				"/:not\('(.+)'\)/" => function ($match) use ($selector){
+					$this->_quotedNegationArgument($match, $selector);
 				},
 
 				// used a class or Id instead of a pseudo-class position
@@ -115,7 +117,7 @@ class Cleaner
 			-1,
 			$replacement_count
 		);
-		
+
 		return $replacement_count;
 	}
 
@@ -130,44 +132,6 @@ class Cleaner
 	}
 
 	/**
-	 * Correct syntax where a pseudo-element has pseudo-class syntax
-	 *
-	 * @param string[] $match    The section of selector that has the trouble.
-	 * @param string   $selector The selector before applying this replacement.
-	 *
-	 * @return string The replacement string for that section of the selector.
-	 */
-	private function _pseudoElementConfusion(array $match, string $selector) : string
-	{
-		return ":{$match[0]}";
-		// return $this->_recordReplacement(
-			// 'warnings/pseudo-element-confusion',
-			// $selector,
-			// $match[0],
-			// ":{$match[0]}"
-		// );
-	}
-	
-	/**
-	 * Correct syntax where a pseudo-class has pseudo-element syntax
-	 *
-	 * @param string[] $match    The section of selector that has the trouble.
-	 * @param string   $selector The selector before applying this replacement.
-	 *
-	 * @return string The replacement string for that section of the selector.
-	 */
-	private function _pseudoClassConfusion(array $match, string $selector) : string
-	{
-		return ":{$match[0]}";
-		// return $this->_recordReplacement(
-			// 'warnings/pseudo-class-confusion',
-			// $selector,
-			// $match[0],
-			// ":{$match[0]}"
-		// );
-	}
-
-	/**
 	 * Correct syntax where an nth-child of zero is the trouble
 	 *
 	 * @param string[] $match    The section of selector that has the trouble.
@@ -178,7 +142,7 @@ class Cleaner
 	private function _nthChildZero(array $match, string $selector) : string
 	{
 		return $this->_recordReplacement(
-			'warnings/ordinality',
+			'notices/ordinality',
 			$selector,
 			$match[0],
 			":nth-{$match[1]}(0n)"
@@ -204,20 +168,20 @@ class Cleaner
 	}
 
 	/**
-	 * Correct syntax where a quoted classname is the trouble
+	 * Correct syntax where a quoted argument to a negation pseudo-class is the trouble
 	 *
 	 * @param string[] $match    The section of selector that has the trouble.
 	 * @param string   $selector The selector before applying this replacement.
 	 *
 	 * @return string The replacement string for that section of the selector.
 	 */
-	private function _quotedClassname(array $match, string $selector) : string
+	private function _quotedNegationArgument(array $match, string $selector) : string
 	{
 		return $this->_recordReplacement(
 			'warnings/quote-all-the-things',
 			$selector,
 			$match[0],
-			":not(.{$match[1]})"
+			":not({$match[1]})"
 		);
 	}
 

@@ -111,5 +111,14 @@ class CommandContext implements Context, SnippetAcceptingContext
         exec("bin/triage '$argument'", $this->_command_output, $this->_command_exit_status);
     }
 	
+    /**
+     * @When I run triage in show-all-files mode with argument :argument
+     */
+    public function iRunTriageInShowAllFilesModeWithArgument($argument)
+    {
+        exec("bin/triage '$argument' --show-all-files", $this->_command_output, $this->_command_exit_status);
+    }
+	
+	
 }
 

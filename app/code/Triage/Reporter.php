@@ -47,7 +47,7 @@ class Reporter
 
 		$details = $analysis->getDetails();
 		ksort($details);
-		
+
 		foreach($details as $mime_type => $files_of_type){
 			if($this->_skipMimeType($mime_type)){
 				continue;
@@ -82,17 +82,17 @@ class Reporter
 		if($this->_show_all_files){
 			return false;
 		}
-		
+
 		switch($mime_type){
 			case 'text/css':
 				return false;
 				break;
-			
+
 			default:
 				return true;
 		}
 	}
-	
+
 	/**
 	 * Output a formatted string with the given MIME type
 	 *
@@ -134,7 +134,7 @@ class Reporter
 			echo "+", str_repeat('-', strlen($scan_path) + 4), "+", PHP_EOL;
 			echo "|  $scan_path  |", PHP_EOL;
 			echo "+", str_repeat('-', strlen($scan_path) + 4), "+", PHP_EOL;
-			
+
 			$css_reporter->report($analysis);
 		}
 		$css_reporter->summary();

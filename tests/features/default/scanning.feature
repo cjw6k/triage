@@ -9,7 +9,7 @@ Feature: Sources are scanned for later processing
 		"""
 		<content>
 		"""
-		When I run triage with argument "<file>"
+		When I run triage in show-all-files mode with argument "<file>"
 		Then I should see "0 directories"
 		And I should see "1 file"
 		And I should see "<mime_type>"
@@ -24,7 +24,7 @@ Feature: Sources are scanned for later processing
 	
 	Scenario: Scanning a directory with multiple source files
 		Given My current working directory is the package root directory
-		When I run triage with argument "tests/fixtures/picker-test/directory-with-20-files"
+		When I run triage in show-all-files mode with argument "tests/fixtures/picker-test/directory-with-20-files"
 		Then I should see "1 directory"
 		And I should see "20 files"
 		And I should see "text/plain"
@@ -32,7 +32,7 @@ Feature: Sources are scanned for later processing
 		
 	Scenario: Scanning a directory with subdirectories and source files
 		Given My current working directory is the package root directory
-		When I run triage with argument "tests/fixtures/picker-test/directory-with-subdirectories-and-files"
+		When I run triage in show-all-files mode with argument "tests/fixtures/picker-test/directory-with-subdirectories-and-files"
 		Then I should see "4 directories"
 		And I should see "8 files"
 		And I should see "text/plain"

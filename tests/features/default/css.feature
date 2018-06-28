@@ -98,6 +98,9 @@ Feature: CSS sources are analyzed for semantic compatibility
 			|  :target{top: 0}                |  1        |  0      |  0       |  0     |  0   |
 			|  input:valid{top: 0}            |  1        |  0      |  0       |  0     |  0   |
 			|  a:visited{top: 0}              |  1        |  0      |  0       |  0     |  0   |
+			
+			# Miscellaneous
+			|  a:nth-child(0){top: 0}         |  1        |  1      |  0       |  0     |  0   |	
 
 			# Experimental Pseudo-classes (as of 2018-06-24)
 			|  a:any-link{top: 0}             |  1        |  1      |  0       |  0     |  0   |
@@ -130,19 +133,20 @@ Feature: CSS sources are analyzed for semantic compatibility
 			|  a:nth-child(.foo){top: 0}       |  1        |  0      |  1       |  0     |  0   |
 			|  a:nth-last-child(#foo){top: 0}  |  1        |  0      |  1       |  0     |  0   |
 			                                                     
-			# Pseudo-class syntax for pseudo-elements            
-			|  div:after{top: 0}               |  1        |  0      |  1       |  0     |  0   |
+			# Pseudo-class syntax for pseudo-elements
+			# Only considered wrong for CSS3, considered okay for CSS2 (strict-mode option?)
+			|  div:after{top: 0}               |  1        |  0      |  0       |  0     |  0   |
 			                                                     
-			# Pseudo-element syntax for pseudo-classes           
-			|  div::hover{top: 0}              |  1        |  0      |  1       |  0     |  0   |
+			# Pseudo-element syntax for pseudo-classes
+			# Only considered wrong for CSS3, considered okay for CSS2 (strict-mode option?)			
+			|  div::hover{top: 0}              |  1        |  0      |  0       |  0     |  0   |
 			
 			# The next selector includes a zero width space before the 'a'
 			#  You may not see it, but it is there, thus the warning
 			|  ​a{top: 0}       		           |  1        |  0      |  1       |  0     |  0   |
 			
 			# Miscellaneous
-			|  a:not('.foo'){top: 0}           |  1        |  0      |  1       |  0     |  0   |
-			|  a:nth-child(0){top: 0}          |  1        |  0      |  1       |  0     |  0   |			
+			|  a:not('.foo'){top: 0}           |  1        |  0      |  1       |  0     |  0   |		
 			
 	Scenario Outline: Scanning a CSS file with syntax errors
 		Given My current working directory is the package root directory

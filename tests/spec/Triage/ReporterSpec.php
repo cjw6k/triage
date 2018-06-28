@@ -8,6 +8,13 @@ use Prophecy\Argument;
 
 class ReporterSpec extends ObjectBehavior
 {
+	function let()
+	{
+		$show_all_files = false;
+		$show_cows = false;
+		$this->beConstructedWith($show_all_files, $show_cows);
+	}
+	
     function it_is_initializable()
     {
         $this->shouldHaveType(Reporter::class);
