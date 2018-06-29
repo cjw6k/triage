@@ -52,7 +52,8 @@ class Analyzer
 	/**
 	 * Capture picker component reference
 	 *
-	 * @param Picker $picker Picker component.
+	 * @param Picker  $picker  Picker component.
+	 * @param Monitor $monitor Monitor component.
 	 */
 	public function __construct(Picker $picker, Monitor $monitor)
 	{

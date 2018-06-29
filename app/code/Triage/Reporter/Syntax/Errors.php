@@ -1,9 +1,23 @@
 <?php
+/**
+ * The Errors class is herein defined.
+ *
+ * @copyright (C) 2018 by the contributors
+ *
+ * LICENSE: See the /LICENSE.md file for details (MIT)
+ *
+ * @package	Triage
+ * @author	Christopher James Willcock <cjwillcock@ieee.org>
+ * @link	https://triage.cjwillcock.ca/
+ */
 
 declare(strict_types = 1);
 
 namespace Triage\Triage\Reporter\Syntax;
 
+/**
+ * Errors outputs messages about the syntax errors generated from analysis of CSS files.
+ */
 class Errors
 {
 
@@ -12,12 +26,24 @@ class Errors
 		getCount as traitGetCount;
 	}
 
-	public function getCount()
+	/**
+	 * Adjust the number of errors determined in the trait, to account for the shallow depth of the error reports
+	 *
+	 * @return integer The number of errors in this group.
+	 */
+	public function getCount() : int
 	{
 		return $this->traitGetCount() / 3;
 	}
 
-	public function report($show_cows)
+	/**
+	 * Output a message for each item in the set of errors
+	 *
+	 * @param boolean $show_cows Display error messages via the cowsay program.
+	 *
+	 * @return void
+	 */
+	public function report(bool $show_cows)
 	{
 		echo "   - Errors: ", $this->getCount(), PHP_EOL;
 

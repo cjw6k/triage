@@ -21,10 +21,27 @@ namespace Triage\Triage;
 class Reporter
 {
 
+	/**
+	 * Show cowspeak for display of error messages
+	 *
+	 * @var boolean
+	 */
 	private $_show_cows = false;
+
+	/**
+	 * Show all the files scanned no matter what MIME type they have
+	 *
+	 * @var boolean
+	 */
 	private $_show_all_files = false;
 
-	public function __construct($show_all_files, $show_cows)
+	/**
+	 * Capture the options to show all the files in the scan, and to show cows
+	 *
+	 * @param boolean $show_all_files The option flag.
+	 * @param boolean $show_cows      The option flag.
+	 */
+	public function __construct(bool $show_all_files, bool $show_cows)
 	{
 		$this->_show_all_files = $show_all_files;
 		$this->_show_cows = $show_cows;
@@ -78,7 +95,16 @@ class Reporter
 		return (1 == $count) ? $singular : $plural;
 	}
 
-	private function _skipMimeType($mime_type){
+	/**
+	 * Skip reporting some files, based on MIME type
+	 *
+	 * @param string $mime_type The MIME type of the file.
+	 *
+	 * @return boolean true  Do not report on the files of this MIME type.
+	 *                 false Do report on the files of this MIME type.
+	 */
+	private function _skipMimeType(string $mime_type) : bool
+	{
 		if($this->_show_all_files){
 			return false;
 		}
@@ -86,7 +112,6 @@ class Reporter
 		switch($mime_type){
 			case 'text/css':
 				return false;
-				break;
 
 			default:
 				return true;

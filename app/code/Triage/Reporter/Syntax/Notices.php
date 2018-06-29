@@ -1,9 +1,23 @@
 <?php
+/**
+ * The Notices class is herein defined.
+ *
+ * @copyright (C) 2018 by the contributors
+ *
+ * LICENSE: See the /LICENSE.md file for details (MIT)
+ *
+ * @package	Triage
+ * @author	Christopher James Willcock <cjwillcock@ieee.org>
+ * @link	https://triage.cjwillcock.ca/
+ */
 
 declare(strict_types = 1);
 
 namespace Triage\Triage\Reporter\Syntax;
 
+/**
+ * Notices outputs messages about the syntax notices generated from analysis of CSS files.
+ */
 class Notices
 {
 
@@ -11,6 +25,11 @@ class Notices
 		report as traitReport;
 	}
 
+	/**
+	 * Output a message for each item in the set of notices
+	 *
+	 * @return void
+	 */
 	public function report()
 	{
 		echo "   - Notices: ", $this->getCount(), PHP_EOL;
@@ -26,7 +45,14 @@ class Notices
 
 	}
 
-	private function _describe($notice_type)
+	/**
+	 * Output a message describing the type of notice encountered
+	 *
+	 * @param string $notice_type The type of notice.
+	 *
+	 * @return void
+	 */
+	private function _describe(string $notice_type)
 	{
 		echo PHP_EOL;
 

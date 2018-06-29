@@ -1,9 +1,23 @@
 <?php
+/**
+ * The Warnings class is herein defined.
+ *
+ * @copyright (C) 2018 by the contributors
+ *
+ * LICENSE: See the /LICENSE.md file for details (MIT)
+ *
+ * @package	Triage
+ * @author	Christopher James Willcock <cjwillcock@ieee.org>
+ * @link	https://triage.cjwillcock.ca/
+ */
 
 declare(strict_types = 1);
 
 namespace Triage\Triage\Reporter\Syntax;
 
+/**
+ * Warnings outputs messages about the syntax warnings generated from analysis of CSS files.
+ */
 class Warnings
 {
 
@@ -11,6 +25,11 @@ class Warnings
 		report as traitReport;
 	}
 
+	/**
+	 * Output a message for each item in the set of warnings
+	 *
+	 * @return void
+	 */
 	public function report()
 	{
 		echo "   - Warnings: ", $this->getCount(), PHP_EOL;
@@ -26,7 +45,14 @@ class Warnings
 
 	}
 
-	private function _describe($warning_type)
+	/**
+	 * Output a message describing the type of warning encountered
+	 *
+	 * @param string $warning_type The type of warning.
+	 *
+	 * @return void
+	 */
+	private function _describe(string $warning_type)
 	{
 		echo PHP_EOL;
 

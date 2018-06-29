@@ -55,7 +55,7 @@ class Triage
 	 * @var boolean
 	 */
 	private $_show_help = false;
-	
+
 	/**
 	 * Command line argument --moo
 	 *
@@ -68,15 +68,15 @@ class Triage
 	 *
 	 * @var boolean
 	 */
-	private $_show_version = false;	
-	
+	private $_show_version = false;
+
 	/**
 	 * Command line argument -p, --show-progress
 	 *
 	 * @var boolean
 	 */
 	private $_show_progress = false;
-	
+
 	/**
 	 * Command line argument --all
 	 *
@@ -205,16 +205,16 @@ class Triage
 			case '--version':
 				$this->_show_version = true;
 				break;
-				
+
 			case '-p':
 			case '--show-progress':
 				$this->_show_progress = true;
 				break;
-				
+
 			case '--moo':
 				$this->_show_cows = true;
-				break;	
-				
+				break;
+
 			case '-a':
 			case '--show-all-files':
 				$this->_show_all_files = true;
@@ -331,7 +331,7 @@ class Triage
 	private function _initialize()
 	{
 		$monitor = $this->_show_progress ? new Triage\Monitor\Progress() : new Triage\Monitor();
-		
+
 		$this->_analyzer = new Triage\Analyzer(
 			new Triage\Picker(),
 			$monitor

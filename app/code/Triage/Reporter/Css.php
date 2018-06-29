@@ -1,14 +1,45 @@
 <?php
+/**
+ * The Css class is herein defined.
+ *
+ * @copyright (C) 2018 by the contributors
+ *
+ * LICENSE: See the /LICENSE.md file for details (MIT)
+ *
+ * @package	Triage
+ * @author	Christopher James Willcock <cjwillcock@ieee.org>
+ * @link	https://triage.cjwillcock.ca/
+ */
+
+declare(strict_types = 1);
 
 namespace Triage\Triage\Reporter;
 
+/**
+ * Css outputs messages about the analysis of CSS files
+ */
 class Css
 {
 
-	private $_analysis;
+	/**
+	 * The analysis of the CSS file.
+	 *
+	 * @var mixed[]
+	 */
+	private $_analysis = array();
 
+	/**
+	 * Show cowspeak for display of error messages
+	 *
+	 * @var boolean
+	 */
 	private $_show_cows = false;
 
+	/**
+	 * Combined statistics collected for all CSS files included in this analysis
+	 *
+	 * @var mixed[]
+	 */
 	private $_all_file_totals = array(
 		'syntax' => array(
 			'notices' => 0,
@@ -20,24 +51,39 @@ class Css
 		)
 	);
 
-	public function __construct($show_cows)
+	/**
+	 * Capture the option to show cows
+	 *
+	 * @param boolean $show_cows The option flag.
+	 */
+	public function __construct(bool $show_cows)
 	{
 		$this->_show_cows = $show_cows;
 	}
 
-	public function report($analysis)
+	/**
+	 * Capture analysis of a single CSS file and output a report
+	 *
+	 * @param mixed[] $analysis The section of analysis.
+	 *
+	 * @return void
+	 */
+	public function report(array $analysis)
 	{
 		$this->_analysis = $analysis;
 
 		$this->_report();
 	}
 
+	/**
+	 * Output the detailed report of syntax and semantics troubles found in the file
+	 *
+	 * @return void
+	 */
 	private function _report()
 	{
 		$selector_count = 0;
-		// foreach($analysis['selectors'] as $section => $lines){
 		foreach($this->_analysis['selectors'] as $lines){
-			// foreach($lines as $line_number => $selectors){
 			foreach($lines as $selectors){
 				$selector_count += count($selectors);
 			}
@@ -52,26 +98,6 @@ class Css
 			$this->_all_file_totals['syntax'][$trouble_type] += $trouble_reporter->getCount();
 			$trouble_reporter->report($this->_show_cows);
 		}
-
-		// $warning_count = $this->getTroubleCount($this->_analysis['syntax']['warnings']);
-		// $this->_all_file_totals['syntax']['warnings'] += $warning_count;
-		// echo "   - Warnings: ", $warning_count, PHP_EOL;
-		// if(0 < $warning_count){
-			// $this->_syntaxWarnings();
-		// }
-
-		// $error_count = $this->getTroubleCount($this->_analysis['syntax']['errors']);
-
-		// // Errors have a report which is not as deep as other troubles. Each error has 3 array entries.
-		// $error_count /= 3;
-
-		// $this->_all_file_totals['syntax']['errors'] += $error_count;
-
-		// echo "   - Errors: ", $error_count, PHP_EOL;
-		// if(0 < $error_count){
-			// //new Syntax\Errors($this->_analysis['syntax']['errors']);
-			// $this->_syntaxErrors();
-		// }
 
 		echo " - Semantics:", PHP_EOL;
 
@@ -93,6 +119,11 @@ class Css
 		echo PHP_EOL;
 	}
 
+	/**
+	 * Output a listing of non-POSH HTML usage
+	 *
+	 * @return void
+	 */
 	private function _semanticsPosh()
 	{
 		echo PHP_EOL, "      The website should use Plain Old Simple HTML(5)", PHP_EOL, PHP_EOL;
@@ -108,18 +139,23 @@ class Css
 		echo PHP_EOL;
 	}
 
+	/**
+	 * Output a combined summary report of all CSS files analyzed
+	 *
+	 * @return void
+	 */
 	public function summary()
 	{
 		echo "+-------------------------+", PHP_EOL;
 		echo "|  All CSS Files Summary  |", PHP_EOL;
 		echo "+-------------------------+", PHP_EOL;
 		echo "|  Syntax                 |", PHP_EOL;
-		echo "|  - notices:  " . str_pad($this->_all_file_totals['syntax']['notices'], 9, " ") . "  |", PHP_EOL;
-		echo "|  - warnings:  " . str_pad($this->_all_file_totals['syntax']['warnings'], 8, " ") . "  |", PHP_EOL;
-		echo "|  - errors:  " . str_pad($this->_all_file_totals['syntax']['errors'], 10, " ") . "  |", PHP_EOL;
+		echo "|  - notices:  " . str_pad(strval($this->_all_file_totals['syntax']['notices']), 9, " ") . "  |", PHP_EOL;
+		echo "|  - warnings:  " . str_pad(strval($this->_all_file_totals['syntax']['warnings']), 8, " ") . "  |", PHP_EOL;
+		echo "|  - errors:  " . str_pad(strval($this->_all_file_totals['syntax']['errors']), 10, " ") . "  |", PHP_EOL;
 		echo "|                         |", PHP_EOL;
 		echo "|  Semantics              |", PHP_EOL;
-		echo "|  - POSH:  " . str_pad($this->_all_file_totals['semantics']['posh'], 12, " ") . "  |", PHP_EOL;
+		echo "|  - POSH:  " . str_pad(strval($this->_all_file_totals['semantics']['posh']), 12, " ") . "  |", PHP_EOL;
 		echo "+-------------------------+", PHP_EOL;
 	}
 

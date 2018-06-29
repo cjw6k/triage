@@ -2,7 +2,7 @@
 
 // Set the local timezone, if not set
 if(empty(ini_get('date.timezone'))){
-	date_default_timezone_set('UTC-0');
+	date_default_timezone_set('UTC');
 }
 
 // Make the application root available in a globally defined constant

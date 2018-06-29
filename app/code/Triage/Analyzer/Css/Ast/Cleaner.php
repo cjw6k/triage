@@ -49,13 +49,13 @@ class Cleaner
 		$this->_selector = preg_replace_callback_array(
 			array(
 				// pseudo-class syntax used for a pseudo-element
-				'/(?<!:)(:(after|backdrop|before|cue|first-letter|first-line|grammar-error|marker|placeholder|selection|slotted|spelling-error))/' => function($match){
+				'/(?<!:)(:(?:after|before|placeholder|selection|first-letter|first-line|backdrop|cue|grammar-error|marker|slotted|spelling-error))/' => function($match){
 					//$this->_pseudoElementConfusion($match, $selector);
 					return ":{$match[1]}";
 				},
 
 				// pseudo-element syntax used for a pseduo-class
-				'/::(active|any|any-link|checked|default|defined|dir\(.*\)|disabled|empty|enabled|first|first-child|first-of-type|fullscreen|focus|host|host\(.*\)|host-context\(.*\)|hover|indeterminate|in-range|invalid|lang\(.*\)|last-child|last-of-type|left|link|not\(.*\)|nth-child\(.*\)|nth-last-child\(.*\)|nath-last-of-type\(.*\)|nth-of-type\(.*\)|only-child|only-of-type|optional|out-of-range|read-only|read-write|required|right|root|scope|target|valid|visited)/' => function($match){
+				'/::(visited|hover|link|focus|active|empty|checked|disabled|first-child|first-of-type|last-child|last-of-type|not\(.*\)|nth-child\(.*\)|required|nth-last-child\(.*\)|nth-last-of-type\(.*\)|nth-of-type\(.*\)|only-child|only-of-type|valid|invalid|indeterminate|any|any-link|default|defined|dir\(.*\)|enabled|first|fullscreen|host|host\(.*\)|host-context\(.*\)|in-range|lang\(.*\)|left|optional|out-of-range|read-only|read-write|right|root|scope|target)/' => function($match){
 					//$this->_pseudoClassConfusion($match, $selector);
 					return ":{$match[1]}";
 				},
@@ -79,12 +79,12 @@ class Cleaner
 				},
 
 				// used a class or Id instead of a pseudo-class position
-				"/:nth\-(last\-)?(child|of\-type)\((\.|#).*\)/" => function ($match) use ($selector){
+				"/:nth\-((?:last\-)?(?:child|of\-type))\((?:\.|#).*\)/" => function ($match) use ($selector){
 					$this->_badPseudoClassPosition($match, $selector);
 				},
 
 				// unrecognized vendor extension
-				"/:?(:-ms-|:-webkit-|:-moz-|:-o-)[0-9a-z\-]*/" => function($match) use ($selector){
+				"/:?(?::-ms-|:-webkit-|:-moz-|:-o-)[0-9a-z\-]*+/" => function($match) use ($selector){
 					$this->_vendorPrefix($match, $selector);
 				},
 
@@ -94,22 +94,22 @@ class Cleaner
 				},
 
 				// Experimental pseudo-elements
-				'/::(backdrop|marker|placeholder|spelling-error|grammar-error)[^-0-9a-zA-Z]*$/' => function($match) use ($selector){
+				'/::(?:placeholder|backdrop|marker|spelling-error|grammar-error)[^-0-9a-zA-Z]*+$/' => function($match) use ($selector){
 					$this->_experimentalPseudoElement($match, $selector);
 				},
 
 				// Unsupported-in-PhpCss pseudo-elements
-				'/::(cue|selection|slotted)[^-0-9a-zA-Z]*$/' => function(){
+				'/::(?:selection|cue|slotted)[^-0-9a-zA-Z]*+$/' => function(){
 					return '';
 				},
 
 				// Experimental pseudo-classes
-				'/:(any-link|dir\(.*\)|fullscreen|host\(.*\)|host-context\(.*\))[^-0-9a-zA-Z]*$/' => function($match) use ($selector){
+				'/:(?:any-link|dir\(.*\)|fullscreen|host\(.*\)|host-context\(.*\))[^-0-9a-zA-Z]*+$/' => function($match) use ($selector){
 					$this->_experimentalPseudoClass($match, $selector);
 				},
 
 				// Unsupported-in-PhpCss pseudo-classes
-				'/:(default|defined|first|host|in-range|indeterminate|invalid|left|optional|out-of-range|read-only|read-write|required|right|scope|valid)[^-0-9a-zA-Z]*$/' => function(){
+				'/:(?:required|valid|default|defined|first|host|in-range|indeterminate|invalid|left|optional|out-of-range|read-only|read-write|right|scope)[^-0-9a-zA-Z]*+$/' => function(){
 					return '';
 				},
 			),
