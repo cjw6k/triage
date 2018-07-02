@@ -12,7 +12,8 @@ class AstSpec extends ObjectBehavior
 	{
 		$file = array();
 		$posh = new \stdClass();
-		$this->beConstructedWith($file, $posh);
+		$microformats = new \stdClass();
+		$this->beConstructedWith($file, $posh, $microformats);
 	}
 	
     function it_is_initializable()

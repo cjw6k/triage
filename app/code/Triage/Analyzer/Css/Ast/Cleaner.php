@@ -94,23 +94,23 @@ class Cleaner
 				},
 
 				// Experimental pseudo-elements
-				'/::(?:placeholder|backdrop|marker|spelling-error|grammar-error)[^-0-9a-zA-Z]*+$/' => function($match) use ($selector){
+				'/(.*)?::(?:placeholder|backdrop|marker|spelling-error|grammar-error)([^-0-9a-zA-Z]*+)?/' => function($match) use ($selector){
 					$this->_experimentalPseudoElement($match, $selector);
 				},
 
 				// Unsupported-in-PhpCss pseudo-elements
-				'/::(?:selection|cue|slotted)[^-0-9a-zA-Z]*+$/' => function(){
-					return '';
+				'/(.*)?::(?:selection|cue|slotted)([^-0-9a-zA-Z]*+)?$/' => function($match){
+					return "${match[1]}${match[2]}";
 				},
 
 				// Experimental pseudo-classes
-				'/:(?:any-link|dir\(.*\)|fullscreen|host\(.*\)|host-context\(.*\))[^-0-9a-zA-Z]*+$/' => function($match) use ($selector){
+				'/(.*)?:(?:any-link|dir\(.*\)|fullscreen|host\(.*\)|host-context\(.*\))([^-0-9a-zA-Z]*+)?/' => function($match) use ($selector){
 					$this->_experimentalPseudoClass($match, $selector);
 				},
 
 				// Unsupported-in-PhpCss pseudo-classes
-				'/:(?:required|valid|default|defined|first|host|in-range|indeterminate|invalid|left|optional|out-of-range|read-only|read-write|right|scope)[^-0-9a-zA-Z]*+$/' => function(){
-					return '';
+				'/(.*)?:(?:required|valid|default|defined|first|host|in-range|indeterminate|invalid|left|optional|out-of-range|read-only|read-write|right|scope)([^-0-9a-zA-Z]*+)?/' => function($match){
+					return "${match[1]}${match[2]}";
 				},
 			),
 			$selector,
@@ -253,7 +253,7 @@ class Cleaner
 			'notices/experimental-pseudo-element',
 			$selector,
 			$match[0],
-			''
+			"${match[1]}${match[2]}"
 		);
 	}
 
@@ -271,7 +271,7 @@ class Cleaner
 			'notices/experimental-pseudo-class',
 			$selector,
 			$match[0],
-			''
+			"${match[1]}${match[2]}"
 		);
 	}
 

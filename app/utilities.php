@@ -5,6 +5,8 @@
  *
  * @param mixed	$data	the data to display
  *
+ * @return void
+ * 
  * @SuppressWarnings(PHPMD.DevelopmentCodeFragment)
  */
 function showMe($data){

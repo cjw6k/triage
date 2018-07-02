@@ -21,7 +21,8 @@ class CssSpec extends ObjectBehavior
 			'semantics' => '',
 		);
 		$plain_old_simple_html = new \stdClass();
-		$this->beConstructedWith($file, $plain_old_simple_html);
+		$microformats = new \stdClass();
+		$this->beConstructedWith($file, $plain_old_simple_html, $microformats);
 	}
 	
     function it_is_initializable()

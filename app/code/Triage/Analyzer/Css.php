@@ -66,13 +66,14 @@ class Css
 	/**
 	 * Capture the file details and the set of POSH tokens
 	 *
-	 * @param string[] $file The file to analyze.
-	 * @param object   $posh The POSH tokens.
+	 * @param string[] $file         The file to analyze.
+	 * @param object   $posh         The POSH tokens.
+	 * @param object   $microformats The microformats vocabularies.
 	 */
-	public function __construct(array $file, object $posh)
+	public function __construct(array $file, object $posh, object $microformats)
 	{
 		$this->_file = $file;
-		$this->_ast = new Css\Ast($file, $posh);
+		$this->_ast = new Css\Ast($file, $posh, $microformats);
 	}
 
 	/**
@@ -86,8 +87,7 @@ class Css
 		$parser = new \Sabberworm\CSS\Parser($css);
 
 		// The parsing library sometimes generates PHP Notices when bad syntax is encountered
-		// An @ could appear here, (where a pull request to upstream is made first)
-		$tree = $parser->parse();
+		$tree = @$parser->parse();
 
 		$this->_collectStatistics($tree, strlen($css));
 

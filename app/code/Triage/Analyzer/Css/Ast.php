@@ -33,12 +33,14 @@ class Ast
 	);
 
 	/**
-	 * The details of POSH issues found in the syntax
+	 * The details of semantics issues found in the syntax
 	 *
 	 * @var mixed[]
 	 */
 	private $_semantics = array(
 		'posh' => array(),
+		'microformats' => array(),
+		'microformats2' => array(),
 	);
 
 	/**
@@ -47,6 +49,13 @@ class Ast
 	 * @var mixed[]
 	 */
 	private $_posh = null;
+
+	/**
+	 * The tokens of the well-known microformats vocabularies
+	 *
+	 * @var mixed[]
+	 */
+	private $_microformats = null;
 
 	/**
 	 * The details of the file to parse
@@ -65,13 +74,15 @@ class Ast
 	/**
 	 * Catpures the file details and the set of POSH tags
 	 *
-	 * @param mixed[] $file The details of the file to parse.
-	 * @param object  $posh The collection of tags that are POSH.
+	 * @param mixed[] $file         The details of the file to parse.
+	 * @param object  $posh         The collection of tags that are POSH.
+	 * @param object  $microformats The classes of the well-known microformats vocabularies.
 	 */
-	public function __construct(array $file, object $posh)
+	public function __construct(array $file, object $posh, object $microformats)
 	{
 		$this->_file = $file;
 		$this->_posh = $posh;
+		$this->_microformats = $microformats;
 		$this->_cleaner = new Ast\Cleaner();
 	}
 
@@ -328,33 +339,60 @@ class Ast
 	private function _simpleSelectorClassName(object $simple, int $line_number)
 	{
 		// Class <- what we are here to investigate
-		//$token = $simple->className;
-		//$normalized_token = strtolower($token);
+		$token = $simple->className;
+		$normalized_token = strtolower($token);
 
-		// if(isset($this->_microformats->microformats->$normalized_token)){
-			// $this->_semantics['microformats'][$normalized_token][] = $line_number;
-			// //showMe($target['scan_path'] . ' @ ' . $line_number . ': using microformats token ' . $normalized_token);
-			// return;
-		// }
+		if(isset($this->_microformats->microformats->$normalized_token)){
+			$this->_semantics['microformats'][$normalized_token][] = $line_number;
+			//showMe($target['scan_path'] . ' @ ' . $line_number . ': using microformats token ' . $normalized_token);
+			return;
+		}
 
-		// if(preg_match('/^(?:[a-z]{1,2})-.*/i', $token)){
-			// if(preg_match('/^(?:h|e|u|dt|p)-.*/i', $token)){
-				// //showMe($target['scan_path'] . ' @ ' . $line_number . ': using microformats2 prefixing ' . $normalized_token);
-				// $this->_microformats2Semantics($token, $normalized_token, $target, $line_number, $parameter);
-				// return;
-			// }
+		if(preg_match('/^(?:[a-z]{1,2})-.*/i', $token)){
+			if(preg_match('/^(?:h|e|u|dt|p)-.*/i', $token)){
+				//showMe($target['scan_path'] . ' @ ' . $line_number . ': using microformats2 prefixing ' . $normalized_token);
+				$this->_microformats2Semantics($normalized_token, $line_number);
+				return;
+			}
 
-			// $single_or_double_letter_prefix = substr($normalized_token, 0, strpos($normalized_token, '-'));
+			$single_or_double_letter_prefix = substr($normalized_token, 0, strpos($normalized_token, '-'));
 
-			// //showMe("Speculative mf2 token format: \"" . $single_or_double_letter_prefix . "-*\" matching \"$token\" used in {$target['scan_path']} @ line $line_number");
+			//showMe("Speculative mf2 token format: \"" . $single_or_double_letter_prefix . "-*\" matching \"$token\" used in {$target['scan_path']} @ line $line_number");
 
-			// if(2 == strlen($single_or_double_letter_prefix)){
-				// $this->_semantics['microformats2']['prefix-format']['double-letter'][$single_or_double_letter_prefix][] = $line_number;
-				// return;
-			// }
+			if(2 == strlen($single_or_double_letter_prefix)){
+				$this->_semantics['microformats2']['prefix-format']['double-letter'][$single_or_double_letter_prefix][] = array(
+					'line_number' => $line_number,
+					'token' => $token,
+				);
+				return;
+			}
 
-			// $this->_semantics['microformats2']['prefix-format']['single-letter'][$single_or_double_letter_prefix][] = $line_number;
-		// }
+			$this->_semantics['microformats2']['prefix-format']['single-letter'][$single_or_double_letter_prefix][] = array(
+				'line_number' => $line_number,
+				'token' => $token,
+			);
+		}
+	}
+
+	/**
+	 * Capture usage of microformats2 tokens in Css
+	 *
+	 * @param string  $normalized_token The CSS token.
+	 * @param integer $line_number      The line number.
+	 *
+	 * @return void
+	 */
+	private function _microformats2Semantics(string $normalized_token, int $line_number)
+	{
+		// Check for well-known mf2 vocabulary tokens
+		if(isset($this->_microformats->microformats2->$normalized_token)){
+			//showMe("Well-known mf2 token: \"$normalized_token\" used in {$target['scan_path']} @ line $line_number");
+			$this->_semantics['microformats2']['well-known'][$normalized_token][] = $line_number;
+			return;
+		}
+
+		//showMe("Well-known mf2 token format: \"" . substr($normalized_token, 0, 1) . "-*\" matching \"$token\" used in {$target['scan_path']} @ line $line_number");
+		$this->_semantics['microformats2']['well-known-format'][$normalized_token][] = $line_number;
 	}
 
 	/**

@@ -50,6 +50,13 @@ class Analyzer
 	private $_plain_old_simple_html = array();
 
 	/**
+	 * The collection of well-known tokens that make up the microformats vocabularies
+	 *
+	 * @var mixed[]
+	 */
+	private $_microformats = array();
+
+	/**
 	 * Capture picker component reference
 	 *
 	 * @param Picker  $picker  Picker component.
@@ -60,6 +67,7 @@ class Analyzer
 		$this->_picker = $picker;
 		$this->_monitor = $monitor;
 		$this->_plain_old_simple_html = json_decode(file_get_contents(PACKAGE_ROOT . '/var/plain_old_simple_html_elements.json'));
+		$this->_microformats = json_decode(file_get_contents(PACKAGE_ROOT . '/var/microformats_generation_class_tokens.json'));
 	}
 
 	/**
@@ -98,7 +106,13 @@ class Analyzer
 	{
 		switch($file['mime_type']){
 			case 'text/css':
-				$this->_analysis->addCssFile((new Analyzer\Css($file, $this->_plain_old_simple_html))->analyze());
+				$this->_analysis->addCssFile(
+					(new Analyzer\Css(
+						$file,
+						$this->_plain_old_simple_html,
+						$this->_microformats
+					))->analyze()
+				);
 				break;
 
 			default:

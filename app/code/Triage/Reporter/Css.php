@@ -47,7 +47,9 @@ class Css
 			'errors' => 0,
 		),
 		'semantics' => array(
-			'posh' => 0
+			'posh' => 0,
+			'microformats' => 0,
+			'microformats2' => 0,
 		)
 	);
 
@@ -82,6 +84,7 @@ class Css
 	 */
 	private function _report()
 	{
+		//showMe($this->_analysis['semantics']);
 		$selector_count = 0;
 		foreach($this->_analysis['selectors'] as $lines){
 			foreach($lines as $selectors){
@@ -101,41 +104,13 @@ class Css
 
 		echo " - Semantics:", PHP_EOL;
 
-		$posh_count = 0;
-		if(!empty($this->_analysis['semantics']['posh'])){
-			foreach($this->_analysis['semantics']['posh'] as $lines){
-				$posh_count += count($lines);
-			}
+		foreach(array('posh', 'microformats', 'microformats2') as $trouble_type){
+			$semantic_class = "\\Triage\\Triage\\Reporter\\Semantics\\" . ucfirst($trouble_type);
+			$trouble_reporter = new $semantic_class($this->_analysis['semantics'][$trouble_type]);
+			$this->_all_file_totals['semantics'][$trouble_type] += $trouble_reporter->getCount();
+			$trouble_reporter->report();
 		}
 
-		$this->_all_file_totals['semantics']['posh'] += $posh_count;
-
-		echo "   - POSH: ", $posh_count, PHP_EOL;
-		if(0 < $posh_count){
-			//new Semantics\Posh($this->_analysis['semantics']['posh']);
-			$this->_semanticsPosh();
-		}
-
-		echo PHP_EOL;
-	}
-
-	/**
-	 * Output a listing of non-POSH HTML usage
-	 *
-	 * @return void
-	 */
-	private function _semanticsPosh()
-	{
-		echo PHP_EOL, "      The website should use Plain Old Simple HTML(5)", PHP_EOL, PHP_EOL;
-		foreach($this->_analysis['semantics']['posh'] as $element => $lines){
-			echo "      - <$element> ";
-			foreach($lines as $key => $line_number){
-				if(0 != $key){
-					echo "           ", str_repeat(" ", strlen($element));
-				}
-				echo "@ line $line_number", PHP_EOL;
-			}
-		}
 		echo PHP_EOL;
 	}
 
@@ -146,17 +121,19 @@ class Css
 	 */
 	public function summary()
 	{
-		echo "+-------------------------+", PHP_EOL;
-		echo "|  All CSS Files Summary  |", PHP_EOL;
-		echo "+-------------------------+", PHP_EOL;
-		echo "|  Syntax                 |", PHP_EOL;
-		echo "|  - notices:  " . str_pad(strval($this->_all_file_totals['syntax']['notices']), 9, " ") . "  |", PHP_EOL;
-		echo "|  - warnings:  " . str_pad(strval($this->_all_file_totals['syntax']['warnings']), 8, " ") . "  |", PHP_EOL;
-		echo "|  - errors:  " . str_pad(strval($this->_all_file_totals['syntax']['errors']), 10, " ") . "  |", PHP_EOL;
-		echo "|                         |", PHP_EOL;
-		echo "|  Semantics              |", PHP_EOL;
-		echo "|  - POSH:  " . str_pad(strval($this->_all_file_totals['semantics']['posh']), 12, " ") . "  |", PHP_EOL;
-		echo "+-------------------------+", PHP_EOL;
+		echo "+---------------------------+", PHP_EOL;
+		echo "|   All CSS Files Summary   |", PHP_EOL;
+		echo "+---------------------------+", PHP_EOL;
+		echo "|  Syntax                   |", PHP_EOL;
+		echo "|  - notices:  " . str_pad(strval($this->_all_file_totals['syntax']['notices']), 11, " ") . "  |", PHP_EOL;
+		echo "|  - warnings:  " . str_pad(strval($this->_all_file_totals['syntax']['warnings']), 10, " ") . "  |", PHP_EOL;
+		echo "|  - errors:  " . str_pad(strval($this->_all_file_totals['syntax']['errors']), 12, " ") . "  |", PHP_EOL;
+		echo "|                           |", PHP_EOL;
+		echo "|  Semantics                |", PHP_EOL;
+		echo "|  - POSH:  " . str_pad(strval($this->_all_file_totals['semantics']['posh']), 14, " ") . "  |", PHP_EOL;
+		echo "|  - Microformats:  " . str_pad(strval($this->_all_file_totals['semantics']['microformats']), 6, " ") . "  |", PHP_EOL;
+		echo "|  - Microformats2:  " . str_pad(strval($this->_all_file_totals['semantics']['microformats2']), 5, " ") . "  |", PHP_EOL;
+		echo "+---------------------------+", PHP_EOL;
 	}
 
 }
