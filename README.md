@@ -26,6 +26,10 @@ and create the replacement `./vendor/bin/phpcs` with contents:
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 $DIR/phpcs-default "$@" --tab-width=4
 ```
+make the new file executable:
+```shell
+chmod +x vendor/bin/phpcs
+```
 
 ## Acknowledgements
 Everyone at [#IndieWebCamp](https://indieweb.org/)!  
