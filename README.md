@@ -15,7 +15,7 @@ To run all the tests, use `./run-tests.sh`. This copies the reports into `./publ
 -----
 
 #### Required hack for tests toolchain to work as of 2018-06-19
-There is a limitation with using tags as the indentation method and phpcs. I don't try to understand it, i just fix it:
+There is a limitation with using tabs as the indentation method and phpcs. I don't try to understand it, i just fix it:
 ```shell
 $ mv vendor/bin/phpcs vendor/bin/phpcs-default
 ```
