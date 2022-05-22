@@ -10,6 +10,11 @@ declare(strict_types=1);
 
 namespace Triage;
 
+use Triage\Triage\Analyzer;
+use Triage\Triage\Monitor;
+use Triage\Triage\Monitor\Progress;
+use Triage\Triage\Picker;
+use Triage\Triage\Reporter;
 use function array_shift;
 use function count;
 use function is_array;
@@ -26,69 +31,69 @@ class Triage
     /**
      * The current version number
      */
-    private ?string $_version = null;
+    private ?string $version = null;
 
     /**
      * Command line arguments
      *
      * @var array<mixed>
      */
-    private ?array $_argv = null;
+    private ?array $argv = null;
 
     /**
      * Command line argument validity
      */
-    private bool $_arguments_error = false;
+    private bool $arguments_error = false;
 
     /**
      * Relevant error message for invalid command line arguments
      */
-    private string $_arguments_error_message = '';
+    private string $arguments_error_message = '';
 
     /**
      * Command line argument --help
      */
-    private bool $_show_help = false;
+    private bool $show_help = false;
 
     /**
      * Command line argument --moo
      */
-    private bool $_show_cows = false;
+    private bool $show_cows = false;
 
     /**
      * Command line argument --version
      */
-    private bool $_show_version = false;
+    private bool $show_version = false;
 
     /**
      * Command line argument -p, --show-progress
      */
-    private bool $_show_progress = false;
+    private bool $show_progress = false;
 
     /**
      * Command line argument --all
      */
-    private bool $_show_all_files = false;
+    private bool $show_all_files = false;
 
     /**
      * Command line argument, source to analyze
      */
-    private ?string $_source = null;
+    private ?string $source = null;
 
     /**
      * A message displayed when the user needs usage information
      */
-    private string $_usage_message = "Usage: triage [OPTION]... SOURCE";
+    private string $usage_message = "Usage: triage [OPTION]... SOURCE";
 
     /**
      * A reference to the analyzer component
      */
-    private ?Triage\Analyzer $_analyzer = null;
+    private ?Analyzer $analyzer = null;
 
     /**
      * A reference to the reporter component
      */
-    private ?Triage\Reporter $_reporter = null;
+    private ?Reporter $reporter = null;
 
     /**
      * Capture version and command line arguments
@@ -98,8 +103,8 @@ class Triage
      */
     public function __construct(string $version, ?array $argv = null)
     {
-        $this->_version = $version;
-        $this->_argv = $argv;
+        $this->version = $version;
+        $this->argv = $argv;
     }
 
     /**
@@ -109,35 +114,35 @@ class Triage
      */
     public function run(): int
     {
-        if (! $this->_hasRequiredArguments()) {
-            $this->_showUsage();
+        if (! $this->hasRequiredArguments()) {
+            $this->showUsage();
 
             return 1;
         }
 
-        if ($this->_show_help) {
-            $this->_showHelp();
+        if ($this->show_help) {
+            $this->showHelp();
 
             return 0;
         }
 
-        if ($this->_show_version) {
-            $this->_showVersion();
+        if ($this->show_version) {
+            $this->showVersion();
 
             return 0;
         }
 
-        if (! $this->_hasValidSource()) {
-            $this->_showError();
+        if (! $this->hasValidSource()) {
+            $this->showError();
 
             return 1;
         }
 
-        $this->_initialize();
+        $this->initialize();
 
-        $analysis = $this->_analyzer->analyze($this->_source);
+        $analysis = $this->analyzer->analyze($this->source);
 
-        $this->_reporter->report($analysis);
+        $this->reporter->report($analysis);
 
         return 0;
     }
@@ -148,26 +153,26 @@ class Triage
      * @return bool true Arguments are present.
  * false Arguments are not present.
      */
-    private function _hasRequiredArguments(): bool
+    private function hasRequiredArguments(): bool
     {
-        if (! is_array($this->_argv)) {
+        if (! is_array($this->argv)) {
             return false;
         }
 
-        if (count($this->_argv) < 2) {
+        if (count($this->argv) < 2) {
             return false;
         }
 
         // The first item in the array is the executable itself, e.g. 'bin/triage'
-        array_shift($this->_argv);
+        array_shift($this->argv);
 
-        while (! empty($this->_argv)) {
-            $argument = array_shift($this->_argv);
+        while (! empty($this->argv)) {
+            $argument = array_shift($this->argv);
 
-            $this->_parseArgument($argument);
+            $this->parseArgument($argument);
         }
 
-        return ! $this->_arguments_error;
+        return ! $this->arguments_error;
     }
 
     /**
@@ -175,60 +180,60 @@ class Triage
      *
      * @param string $argument Command line argument to parse.
      */
-    private function _parseArgument(string $argument): void
+    private function parseArgument(string $argument): void
     {
         switch ($argument) {
             case '--help':
-                $this->_show_help = true;
+                $this->show_help = true;
 
                 break;
 
             case '--version':
-                $this->_show_version = true;
+                $this->show_version = true;
 
                 break;
 
             case '-p':
             case '--show-progress':
-                $this->_show_progress = true;
+                $this->show_progress = true;
 
                 break;
 
             case '--moo':
-                $this->_show_cows = true;
+                $this->show_cows = true;
 
                 break;
 
             case '-a':
             case '--show-all-files':
-                $this->_show_all_files = true;
+                $this->show_all_files = true;
 
                 break;
 
             default:
-                if ($this->_source !== null) {
+                if ($this->source !== null) {
                     // Two is too many (so is any amount which is more than one)
-                    $this->_arguments_error = true;
+                    $this->arguments_error = true;
                 }
 
-                $this->_source = $argument;
+                $this->source = $argument;
         }
     }
 
     /**
      * Show the usage message
      */
-    private function _showUsage(): void
+    private function showUsage(): void
     {
-        echo $this->_usage_message, PHP_EOL, "Try 'triage --help' for more information.", PHP_EOL;
+        echo $this->usage_message, PHP_EOL, "Try 'triage --help' for more information.", PHP_EOL;
     }
 
     /**
      * Show the help message
      */
-    private function _showHelp(): void
+    private function showHelp(): void
     {
-        echo $this->_usage_message, PHP_EOL, PHP_EOL;
+        echo $this->usage_message, PHP_EOL, PHP_EOL;
         echo "OPTIONS:", PHP_EOL;
         echo "\t-a, --show-all-files\tshow all files scanned no matter which MIME type", PHP_EOL;
         echo "\t-p, --show-progress\tshow scan and analysis status while running", PHP_EOL;
@@ -244,9 +249,9 @@ class Triage
     /**
      * Show the version message.
      */
-    private function _showVersion(): void
+    private function showVersion(): void
     {
-        echo "triage {$this->_version}", PHP_EOL, file_get_contents(__DIR__ . '/../../LICENSE');
+        echo "triage {$this->version}", PHP_EOL, file_get_contents(__DIR__ . '/../../LICENSE');
     }
 
     /**
@@ -257,18 +262,18 @@ class Triage
      * @return bool true The SOURCE is readable.
  * false The SOURCE is not readable.
      */
-    private function _hasValidSource(): bool
+    private function hasValidSource(): bool
     {
-        $realpath = realpath($this->_source);
+        $realpath = realpath($this->source);
 
         if ($realpath === false) {
-            $this->_arguments_error_message = "triage: no such file or directory";
+            $this->arguments_error_message = "triage: no such file or directory";
 
             return false;
         }
 
-        if (! is_readable($this->_source)) {
-            $this->_arguments_error_message = "triage: cannot open '$this->_source' for reading: Permission denied";
+        if (! is_readable($this->source)) {
+            $this->arguments_error_message = "triage: cannot open '$this->source' for reading: Permission denied";
 
             return false;
         }
@@ -279,29 +284,29 @@ class Triage
     /**
      * Show the relevant error message for invalid arguments
      */
-    private function _showError(): void
+    private function showError(): void
     {
-        if (empty($this->_arguments_error_message)) {
+        if (empty($this->arguments_error_message)) {
             return;
         }
 
-        echo $this->_arguments_error_message, PHP_EOL;
+        echo $this->arguments_error_message, PHP_EOL;
     }
 
     /**
      * Initialize the required components
      */
-    private function _initialize(): void
+    private function initialize(): void
     {
-        $monitor = $this->_show_progress
-            ? new Triage\Monitor\Progress()
-            : new Triage\Monitor();
+        $monitor = $this->show_progress
+            ? new Progress()
+            : new Monitor();
 
-        $this->_analyzer = new Triage\Analyzer(
-            new Triage\Picker(),
+        $this->analyzer = new Analyzer(
+            new Picker(),
             $monitor
         );
 
-        $this->_reporter = new Triage\Reporter($this->_show_all_files, $this->_show_cows);
+        $this->reporter = new Reporter($this->show_all_files, $this->show_cows);
     }
 }

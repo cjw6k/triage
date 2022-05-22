@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace Triage\Triage;
 
+use Triage\Triage\Analyzer\Css;
+
 use function file_get_contents;
 use function json_decode;
 
@@ -21,27 +23,27 @@ class Analyzer
     /**
      * A reference to the Picker component
      */
-    private ?Picker $_picker = null;
+    private ?Picker $picker = null;
 
     /**
      * A reference to the Monitor component
      */
-    private ?Monitor $_monitor = null;
+    private ?Monitor $monitor = null;
 
     /**
      * A reference to the analysis component
      */
-    private ?Analysis $_analysis = null;
+    private ?Analysis $analysis = null;
 
     /**
      * The collection of tags that make up Plain Old Simple HTML (POSH)
      */
-    private array|object $_plain_old_simple_html = [];
+    private array|object $plain_old_simple_html = [];
 
     /**
      * The collection of well-known tokens that make up the microformats vocabularies
      */
-    private array|object $_microformats = [];
+    private array|object $microformats = [];
 
     /**
      * Capture picker component reference
@@ -51,10 +53,14 @@ class Analyzer
      */
     public function __construct(Picker $picker, Monitor $monitor)
     {
-        $this->_picker = $picker;
-        $this->_monitor = $monitor;
-        $this->_plain_old_simple_html = json_decode(file_get_contents(PACKAGE_ROOT . '/var/plain_old_simple_html_elements.json'));
-        $this->_microformats = json_decode(file_get_contents(PACKAGE_ROOT . '/var/microformats_generation_class_tokens.json'));
+        $this->picker = $picker;
+        $this->monitor = $monitor;
+        $this->plain_old_simple_html = json_decode(
+            file_get_contents(PACKAGE_ROOT . '/var/plain_old_simple_html_elements.json')
+        );
+        $this->microformats = json_decode(
+            file_get_contents(PACKAGE_ROOT . '/var/microformats_generation_class_tokens.json')
+        );
     }
 
     /**
@@ -66,43 +72,43 @@ class Analyzer
      */
     public function analyze(string $source): Analysis
     {
-        $this->_analysis = new Analysis();
+        $this->analysis = new Analysis();
 
-        $status = $this->_picker->scan($source);
-        $this->_monitor->setTotal($status['files']);
+        $status = $this->picker->scan($source);
+        $this->monitor->setTotal($status['files']);
 
-        $this->_analysis->setPickerStatus($status);
+        $this->analysis->setPickerStatus($status);
 
-        while ($this->_picker->hasPicks()) {
-            $file = $this->_picker->nextPick();
-            $this->_analyzeFile($file);
-            $this->_monitor->mark($file['scan_path']);
+        while ($this->picker->hasPicks()) {
+            $file = $this->picker->nextPick();
+            $this->analyzeFile($file);
+            $this->monitor->mark($file['scan_path']);
         }
 
-        return $this->_analysis;
+        return $this->analysis;
     }
 
     /**
      * Perform analysis on a single file
      *
-     * @param array $file The file to analyze.
+     * @param array<array-key, string> $file The file to analyze.
      */
-    private function _analyzeFile(array $file): void
+    private function analyzeFile(array $file): void
     {
         switch ($file['mime_type']) {
             case 'text/css':
-                $this->_analysis->addCssFile(
-                    (new Analyzer\Css(
+                $this->analysis->addCssFile(
+                    (new Css(
                         $file,
-                        $this->_plain_old_simple_html,
-                        $this->_microformats
+                        $this->plain_old_simple_html,
+                        $this->microformats
                     ))->analyze()
                 );
 
                 break;
 
             default:
-                $this->_analysis->addUnsupportedFile($file);
+                $this->analysis->addUnsupportedFile($file);
         }
     }
 }

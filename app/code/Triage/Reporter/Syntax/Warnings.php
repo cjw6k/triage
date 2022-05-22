@@ -19,7 +19,7 @@ use const PHP_EOL;
  */
 class Warnings
 {
-    use SyntaxTrait {
+    use Syntax {
         report as traitReport;
     }
 
@@ -34,8 +34,8 @@ class Warnings
             return;
         }
 
-        foreach (array_keys($this->_troubles) as $warning_type) {
-            $this->_describe($warning_type);
+        foreach (array_keys($this->troubles) as $warning_type) {
+            $this->describe($warning_type);
             $this->traitReport($warning_type);
         }
     }
@@ -45,42 +45,23 @@ class Warnings
      *
      * @param string $warning_type The type of warning.
      */
-    private function _describe(string $warning_type): void
+    private function describe(string $warning_type): void
     {
-        echo PHP_EOL;
-
-        switch ($warning_type) {
-            case 'pseudo-element-confusion':
-                echo "      Pseudo-class syntax used for a pseudo-element.";
-
-                break;
-
-            case 'pseudo-class-confusion':
-                echo "      Pseudo-element syntax used for a pseudo-class.";
-
-                break;
-
-            case 'empty-not':
-                echo "      The :not() pseudo-class requires a comma-separated list of one or more selectors as its argument.";
-
-                break;
-
-            case 'bad-pseudo-class-position':
-                echo "      The position argument must be of the form <An+B> | even | odd.";
-
-                break;
-
-            case 'bad-characters':
-                echo "      Selectors may not include extended white-space characters, e.g.: <200b>, <200c>, <200d>.";
-
-                break;
-
-            case 'quote-all-the-things':
-                echo "      Selectors in the argument of a negation pseudo-class should not be quoted like string literals.";
-
-                break;
-        }
-
-        echo PHP_EOL, PHP_EOL;
+        echo PHP_EOL
+            . '      '
+            . match ($warning_type) {
+                'pseudo-element-confusion' => 'Pseudo-class syntax used for a pseudo-element.',
+                'pseudo-class-confusion' => 'Pseudo-element syntax used for a pseudo-class.',
+                'empty-not' => 'The :not() pseudo-class requires a comma-separated list of one or more "
+                    . "selectors as its argument.',
+                'bad-pseudo-class-position' => 'The position argument must be of the form <An+B> | even | odd.',
+                'bad-characters' => 'Selectors may not include extended white-space characters, e.g.: <200b>, <200c>, '
+                    . '<200d>.',
+                'quote-all-the-things' => 'Selectors in the argument of a negation pseudo-class should not be quoted '
+                . 'like string literals.',
+                default => "unexpected warning of type {$warning_type}."
+            }
+            . PHP_EOL
+            . PHP_EOL;
     }
 }

@@ -16,19 +16,19 @@ use function strlen;
 
 use const PHP_EOL;
 
-trait SyntaxTrait
+trait Syntax
 {
     /**
      * The set of troubles for this group
      *
      * @var array<mixed>
      */
-    private array $_troubles = [];
+    private array $troubles = [];
 
     /**
      * The count of troubles in this group
      */
-    private ?int $_count = null;
+    private ?int $count = null;
 
     /**
      * Capture the set of troubles for this group
@@ -37,7 +37,7 @@ trait SyntaxTrait
      */
     public function __construct(array $troubles)
     {
-        $this->_troubles = $troubles;
+        $this->troubles = $troubles;
     }
 
     /**
@@ -50,14 +50,14 @@ trait SyntaxTrait
      */
     public function getCount(): int
     {
-        if ($this->_count !== null) {
-            return $this->_count;
+        if ($this->count !== null) {
+            return $this->count;
         }
 
         $trouble_count = 0;
 
-        if (! empty($this->_troubles)) {
-            foreach ($this->_troubles as $trouble_groups) {
+        if (! empty($this->troubles)) {
+            foreach ($this->troubles as $trouble_groups) {
                 foreach ($trouble_groups as $troubles) {
                     $trouble_count += count($troubles);
                 }
@@ -74,7 +74,7 @@ trait SyntaxTrait
      */
     public function report(string $trouble_type): void
     {
-        foreach ($this->_troubles[$trouble_type] as $line_number => $troubles) {
+        foreach ($this->troubles[$trouble_type] as $line_number => $troubles) {
             $prefix = "      - @ line $line_number: ";
             $prefix_length = strlen($prefix);
 

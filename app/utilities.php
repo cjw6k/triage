@@ -3,7 +3,8 @@
 declare(strict_types=1);
 
 /**
- * A debugging function which produces a var_dump of the argument, wrapped in <pre> for display on the web if not using the cli
+ * A debugging function which produces a var_dump of the argument, wrapped in <pre> for display on the web if not using
+ * the cli.
  *
  * @param mixed $data the data to display
  *

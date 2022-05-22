@@ -21,7 +21,7 @@ use const PHP_EOL;
  */
 class Posh
 {
-    use SemanticsTrait;
+    use Semantics;
 
     /**
      * Provide the count of troubles within the group
@@ -35,7 +35,7 @@ class Posh
     {
         $posh_count = 0;
 
-        foreach ($this->_troubles as $lines) {
+        foreach ($this->troubles as $lines) {
             $posh_count += count($lines);
         }
 
@@ -55,7 +55,7 @@ class Posh
 
         echo PHP_EOL, "      The website should use Plain Old Simple HTML(5)", PHP_EOL, PHP_EOL;
 
-        foreach ($this->_troubles as $element => $lines) {
+        foreach ($this->troubles as $element => $lines) {
             echo "      - <$element> ";
 
             foreach ($lines as $key => $line_number) {

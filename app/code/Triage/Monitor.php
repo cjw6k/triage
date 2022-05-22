@@ -25,45 +25,45 @@ class Monitor
     /**
      * The number of columns in the active terminal
      */
-    protected int $_terminal_width = 80;
+    protected int $terminal_width = 80;
 
     /**
      * The number of files scanned by the picker
      */
-    protected int $_total;
+    protected int $total;
 
     /**
      * The number of files scanned analyzed
      */
-    protected int $_complete = 0;
+    protected int $complete = 0;
 
     /**
      * The name of the file currently being scanned
      */
-    protected string $_active_file = '';
+    protected string $active_file = '';
 
     /**
      * The number of columns to be used for a progress bar display
      */
-    private int $_progress_bar_width = 72;
+    private int $progress_bar_width = 72;
 
     /**
      * Determine the number of columns in the terminal
      */
     public function __construct()
     {
-        $this->_getTerminalWidth();
+        $this->getTerminalWidth();
     }
 
     /**
      * Determine the number of columns in the active terminal
      */
-    private function _getTerminalWidth(): void
+    private function getTerminalWidth(): void
     {
         exec('tput cols', $output, $return_code);
 
         if ($return_code == 0) {
-            $this->_terminal_width = (int)trim($output[0]);
+            $this->terminal_width = (int)trim($output[0]);
 
             return;
         }
@@ -78,7 +78,7 @@ class Monitor
             return;
         }
 
-        $this->_terminal_width = (int)trim($match[1]);
+        $this->terminal_width = (int)trim($match[1]);
     }
 
     /**
@@ -88,8 +88,8 @@ class Monitor
      */
     public function setTotal(int $total): void
     {
-        $this->_total = $total;
-        $this->_progress_bar_width = $this->_terminal_width - 1 - strlen(strval($total));
+        $this->total = $total;
+        $this->progress_bar_width = $this->terminal_width - 1 - strlen(strval($total));
     }
 
     /**
@@ -99,15 +99,16 @@ class Monitor
      */
     public function mark(string $active_file): void
     {
-        $this->_active_file = $active_file;
-        $this->_complete++;
-        $this->_updateScreen();
+        $this->active_file = $active_file;
+        $this->complete++;
+        $this->updateScreen();
     }
 
     /**
      * A placeholder function, running once each time a new file is marked as active.
      */
-    protected function _updateScreen(): void
+    protected function updateScreen(): void
     {
+        // placeholder
     }
 }

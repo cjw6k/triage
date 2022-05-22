@@ -1,7 +1,7 @@
 <?php
 
 /**
- * The SemanticsTrait trait is herein defined.
+ * The Semantics trait is herein defined.
  *
  * @link https://triage.cjwillcock.ca/
  */
@@ -12,19 +12,19 @@ namespace Triage\Triage\Reporter\Semantics;
 
 use function count;
 
-trait SemanticsTrait
+trait Semantics
 {
     /**
      * The set of troubles for this group
      *
      * @var array<mixed>
      */
-    private array $_troubles = [];
+    private array $troubles = [];
 
     /**
      * The count of troubles in this group
      */
-    private ?int $_count = null;
+    private ?int $count = null;
 
     /**
      * Capture the set of troubles for this group
@@ -33,7 +33,7 @@ trait SemanticsTrait
      */
     public function __construct(array $troubles)
     {
-        $this->_troubles = $troubles;
+        $this->troubles = $troubles;
     }
 
     /**
@@ -46,14 +46,14 @@ trait SemanticsTrait
      */
     public function getCount(): int
     {
-        if ($this->_count !== null) {
-            return $this->_count;
+        if ($this->count !== null) {
+            return $this->count;
         }
 
         $trouble_count = 0;
 
-        if (! empty($this->_troubles)) {
-            foreach ($this->_troubles as $troubles) {
+        if (! empty($this->troubles)) {
+            foreach ($this->troubles as $troubles) {
                 $trouble_count += count($troubles);
             }
         }

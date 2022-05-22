@@ -29,26 +29,36 @@ class Progress extends Monitor
     /**
      * Output information to the console, about the file currently being analyzed
      */
-    protected function _updateScreen(): void
+    protected function updateScreen(): void
     {
         //$progress = $this->_complete / $this->_total;
         //$progress_bar_complete = round($this->_progress_bar_width * $progress);
 
-        $progress_ending = " " . str_pad(strval($this->_complete), strlen(strval($this->_total)), " ", STR_PAD_LEFT) . " / $this->_total";
+        $progress_ending
+            = " "
+            . str_pad(
+                strval($this->complete),
+                strlen(strval($this->total)),
+                " ",
+                STR_PAD_LEFT
+            )
+            . " / $this->total";
+
         $progress_beginning = " Analyzing: ";
-        $space_available = $this->_terminal_width - strlen($progress_beginning) - strlen($progress_ending);
+        $space_available = $this->terminal_width - strlen($progress_beginning) - strlen($progress_ending);
 
         $progress_message = "$progress_beginning ... $progress_ending";
 
         if ($space_available > 25) {
-            $progress_file = $this->_getActiveFileProgress($space_available);
+            $progress_file = $this->getActiveFileProgress($space_available);
             $space_available -= strlen($progress_file);
-            $progress_message = $progress_beginning . $progress_file . str_repeat(" ", $space_available) . "$progress_ending";
+            $progress_message = $progress_beginning . $progress_file
+                . str_repeat(" ", $space_available) . "$progress_ending";
         }
 
         echo $progress_message;
 
-        if ($this->_total != $this->_complete) {
+        if ($this->total != $this->complete) {
             echo "\r";
 
             return;
@@ -64,12 +74,12 @@ class Progress extends Monitor
      *
      * @return string The filename.
      */
-    private function _getActiveFileProgress(int $space_available): string
+    private function getActiveFileProgress(int $space_available): string
     {
-        if (strlen($this->_active_file) <= $space_available) {
-            return $this->_active_file;
+        if (strlen($this->active_file) <= $space_available) {
+            return $this->active_file;
         }
 
-        return "..." . substr($this->_active_file, strlen($this->_active_file) - $space_available + 3);
+        return "..." . substr($this->active_file, strlen($this->active_file) - $space_available + 3);
     }
 }

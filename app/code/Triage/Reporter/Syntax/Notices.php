@@ -19,7 +19,7 @@ use const PHP_EOL;
  */
 class Notices
 {
-    use SyntaxTrait {
+    use Syntax {
         report as traitReport;
     }
 
@@ -34,8 +34,8 @@ class Notices
             return;
         }
 
-        foreach (array_keys($this->_troubles) as $notice_type) {
-            $this->_describe($notice_type);
+        foreach (array_keys($this->troubles) as $notice_type) {
+            $this->describe($notice_type);
             $this->traitReport($notice_type);
         }
     }
@@ -45,32 +45,20 @@ class Notices
      *
      * @param string $notice_type The type of notice.
      */
-    private function _describe(string $notice_type): void
+    private function describe(string $notice_type): void
     {
-        echo PHP_EOL;
-
-        switch ($notice_type) {
-            case 'unrecognized-vendor-extension':
-                echo "      The vendor extensions activate new and experimental features in browsers.";
-
-                break;
-
-            case 'experimental-pseudo-class':
-                echo "      There are non-standard, experimental pseudo-classes used here.";
-
-                break;
-
-            case 'experimental-pseudo-element':
-                echo "      There are non-standard, experimental pseudo-elements used here.";
-
-                break;
-
-            case 'ordinality':
-                echo "      A structural pseudo-class with a position argument of 0 will not match any elements (indexes start at 1).";
-
-                break;
-        }
-
-        echo PHP_EOL, PHP_EOL;
+        echo PHP_EOL
+            . '      '
+            . match ($notice_type) {
+                'unrecognized-vendor-extension' => 'The vendor extensions activate new and experimental features in '
+                    . 'browsers.',
+                'experimental-pseudo-class' => 'There are non-standard, experimental pseudo-classes used here.',
+                'experimental-pseudo-element' => 'There are non-standard, experimental pseudo-elements used here.',
+                'ordinality' => 'A structural pseudo-class with a position argument of 0 will not match any elements '
+                    . '(indexes start at 1).',
+                default => "Unexpected notice type {$notice_type}."
+            }
+            . PHP_EOL
+            . PHP_EOL;
     }
 }

@@ -19,6 +19,7 @@ use function is_dir;
 use function json_decode;
 use function realpath;
 use function strlen;
+use function strnatcasecmp;
 use function strrpos;
 use function substr;
 use function uasort;
@@ -30,35 +31,39 @@ class Picker
 {
     /**
      * Scanned files that are queued for later use
+     *
+     * @var array<mixed>
      */
-    private array $_picks = [];
+    private array $picks = [];
 
     /**
      * The number of characters that appear in the real path before the SOURCE directory
      */
-    private int $_scan_path_prefix_length = 0;
+    private int $scan_path_prefix_length = 0;
 
     /**
      * The number of directories scanned
      */
-    private int $_directories_scanned = 0;
+    private int $directories_scanned = 0;
 
     /**
      * The number of files scanned
      */
-    private int $_files_scanned = 0;
+    private int $files_scanned = 0;
 
     /**
      * The MIME types corresponding to file extensions
      */
-    private array|object|null $_mime_types_by_extension = null;
+    private array|object|null $mime_types_by_extension = null;
 
     /**
      * Acquires the mime type information from local cache
      */
     public function __construct()
     {
-        $this->_mime_types_by_extension = json_decode(file_get_contents(PACKAGE_ROOT . '/var/mime_types_by_extension.json'));
+        $this->mime_types_by_extension = json_decode(
+            file_get_contents(PACKAGE_ROOT . '/var/mime_types_by_extension.json')
+        );
     }
 
     /**
@@ -73,11 +78,11 @@ class Picker
         $realpath = realpath($source);
 
         if (is_dir($realpath)) {
-            $this->_scan_path_prefix_length = strlen($realpath);
-            $this->_scanDirectory($realpath . '/');
+            $this->scan_path_prefix_length = strlen($realpath);
+            $this->scanDirectory($realpath . '/');
 
             uasort(
-                $this->_picks,
+                $this->picks,
                 static function ($fs_a, $fs_b): int {
                     if ($fs_a['path'] == $fs_b['path']) {
                         return strnatcasecmp($fs_a['filename'], $fs_b['filename']);
@@ -87,12 +92,12 @@ class Picker
                 }
             );
 
-            return $this->_scanStatistics();
+            return $this->scanStatistics();
         }
 
-        $this->_enqueueFile($source);
+        $this->enqueueFile($source);
 
-        return $this->_scanStatistics();
+        return $this->scanStatistics();
     }
 
     /**
@@ -100,9 +105,9 @@ class Picker
      *
      * @param string $directory The directory to scan.
      */
-    private function _scanDirectory(string $directory): void
+    private function scanDirectory(string $directory): void
     {
-        $this->_directories_scanned++;
+        $this->directories_scanned++;
 
         foreach (glob($directory . "*") as $path_to_file) {
             //$file = basename($filename);
@@ -113,11 +118,11 @@ class Picker
                 // continue;
             // }
             if (is_dir($path_to_file)) {
-                $this->_scanDirectory($path_to_file . '/');
+                $this->scanDirectory($path_to_file . '/');
                 continue;
             }
 
-            $this->_enqueueFile($path_to_file);
+            $this->enqueueFile($path_to_file);
         }
     }
 
@@ -126,20 +131,20 @@ class Picker
      *
      * @param string $path_to_file A path to a file.
      */
-    private function _enqueueFile(string $path_to_file): void
+    private function enqueueFile(string $path_to_file): void
     {
-        $this->_files_scanned++;
+        $this->files_scanned++;
         $extension = substr($path_to_file, strrpos($path_to_file, '.') + 1);
-        $mime_type = $this->_mime_types_by_extension->$extension ?? '';
+        $mime_type = $this->mime_types_by_extension->$extension ?? '';
 
         if (empty($mime_type)) {
             $mime_type = "text/plain";
             //$this->_unknownExtension($extension, $path_to_file);
         }
 
-        $this->_picks[] = [
+        $this->picks[] = [
             'path' => dirname($path_to_file),
-            'scan_path' => substr($path_to_file, $this->_scan_path_prefix_length),
+            'scan_path' => substr($path_to_file, $this->scan_path_prefix_length),
             'filename' => basename($path_to_file),
             'mime_type' => $mime_type,
         ];
@@ -153,7 +158,7 @@ class Picker
      */
     public function hasPicks(): bool
     {
-        return ! empty($this->_picks);
+        return ! empty($this->picks);
     }
 
     /**
@@ -163,7 +168,7 @@ class Picker
      */
     public function nextPick(): array
     {
-        return array_shift($this->_picks);
+        return array_shift($this->picks);
     }
 
     /**
@@ -171,11 +176,11 @@ class Picker
      *
      * @return array<mixed> The statistics.
      */
-    private function _scanStatistics(): array
+    private function scanStatistics(): array
     {
         return [
-            'directories' => $this->_directories_scanned,
-            'files' => $this->_files_scanned,
+            'directories' => $this->directories_scanned,
+            'files' => $this->files_scanned,
         ];
     }
 }

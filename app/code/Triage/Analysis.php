@@ -21,7 +21,7 @@ class Analysis
      *
      * @var array<mixed>
      */
-    private array $_package = [
+    private array $package = [
         'directories' => [],
         'files' => 0,
         'notices' => 0,
@@ -38,7 +38,7 @@ class Analysis
      *
      * @var array<mixed>
      */
-    private array $_details = [];
+    private array $details = [];
 
     /**
      * Capture the status of files and directories considered by the Picker
@@ -47,8 +47,8 @@ class Analysis
      */
     public function setPickerStatus(array $status): void
     {
-        $this->_package['directories'] = $status['directories'];
-        $this->_package['files'] = $status['files'];
+        $this->package['directories'] = $status['directories'];
+        $this->package['files'] = $status['files'];
     }
 
     /**
@@ -58,7 +58,7 @@ class Analysis
      */
     public function addUnsupportedFile(array $file): void
     {
-        $this->_details[$file['mime_type']][$file['scan_path']] = $file['filename'];
+        $this->details[$file['mime_type']][$file['scan_path']] = $file['filename'];
     }
 
     /**
@@ -68,7 +68,7 @@ class Analysis
      */
     public function getDirectoryScanCount(): int
     {
-        return $this->_package['directories'];
+        return $this->package['directories'];
     }
 
     /**
@@ -78,7 +78,7 @@ class Analysis
      */
     public function getFileScanCount(): int
     {
-        return $this->_package['files'];
+        return $this->package['files'];
     }
 
     /**
@@ -88,7 +88,7 @@ class Analysis
      */
     public function getDetails(): array
     {
-        return $this->_details;
+        return $this->details;
     }
 
     /**
@@ -98,7 +98,7 @@ class Analysis
      */
     public function addCssFile(array $file): void
     {
-        $this->_details[$file['mime_type']][$file['scan_path']] = [
+        $this->details[$file['mime_type']][$file['scan_path']] = [
             //'stats'     => $file['file_stats'],
             'selectors' => $file['selectors_by_line'],
             //'imports'   => $file['imports_by_line'],

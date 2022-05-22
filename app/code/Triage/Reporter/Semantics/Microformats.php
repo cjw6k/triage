@@ -20,7 +20,7 @@ use const PHP_EOL;
  */
 class Microformats
 {
-    use SemanticsTrait;
+    use Semantics;
 
     /**
      * Output a message for each item in the set of notices
@@ -35,7 +35,7 @@ class Microformats
 
         echo PHP_EOL, "      The website should not use microformats class names for styling", PHP_EOL, PHP_EOL;
 
-        foreach ($this->_troubles as $token => $lines) {
+        foreach ($this->troubles as $token => $lines) {
             echo "      - .$token ";
 
             foreach ($lines as $key => $line_number) {

@@ -21,14 +21,14 @@ class Cleaner
     /**
      * The current CSS selector under examination
      */
-    private string $_selector = "";
+    private string $selector = "";
 
     /**
      * An account of any changes made to the CSS selector to cause it to parse
      *
      * @var array<mixed>
      */
-    private array $_replacements = [];
+    private array $replacements = [];
 
     /**
      * Attempt to clean syntax problems with the selector
@@ -39,64 +39,65 @@ class Cleaner
      */
     public function clean(string $selector): int
     {
-        $this->_reset();
+        $this->reset();
 
-        $this->_selector = preg_replace_callback_array(
+        $this->selector = preg_replace_callback_array(
             [
                 // pseudo-class syntax used for a pseudo-element
-                '/(?<!:)(:(?:after|before|placeholder|selection|first-letter|first-line|backdrop|cue|grammar-error|marker|slotted|spelling-error))/' => static fn ($match) => ":{$match[1]}",
+                '/(?<!:)(:(?:after|before|placeholder|selection|first-letter|first-line|backdrop|cue|grammar-error'
+                    . '|marker|slotted|spelling-error))/' => static fn ($match) => ":{$match[1]}",
 
                 // pseudo-element syntax used for a pseudo-class
-                '/::(visited|hover|link|focus|active|empty|checked|disabled|first-child|first-of-type|last-child|last-of-type|not\(.*\)|nth-child\(.*\)|required|nth-last-child\(.*\)|nth-last-of-type\(.*\)|nth-of-type\(.*\)|only-child|only-of-type|valid|invalid|indeterminate|any|any-link|default|defined|dir\(.*\)|enabled|first|fullscreen|host|host\(.*\)|host-context\(.*\)|in-range|lang\(.*\)|left|optional|out-of-range|read-only|read-write|right|root|scope|target)/' => static fn ($match) => ":{$match[1]}",
+                '/::(visited|hover|link|focus|active|empty|checked|disabled|first-child|first-of-type|last-child'
+                    . '|last-of-type|not\(.*\)|nth-child\(.*\)|required|nth-last-child\(.*\)|nth-last-of-type\(.*\)'
+                    . '|nth-of-type\(.*\)|only-child|only-of-type|valid|invalid|indeterminate|any|any-link|default'
+                    . '|defined|dir\(.*\)|enabled|first|fullscreen|host|host\(.*\)|host-context\(.*\)|in-range'
+                    . '|lang\(.*\)|left|optional|out-of-range|read-only|read-write|right|root|scope|target)/'
+                    => static fn ($match) => ":{$match[1]}",
 
-                // nth-*() parameter of 0, which is syntactically valid but useless and not recognized in \PhpCss (positions start at 1)
-                '/:nth\-(child|of\-type|last\-child)\(0\)/' => function ($match) use ($selector): string {
-                    return $this->_nthChildZero($match, $selector);
-                },
+                /*
+                 * nth-*() parameter of 0, which is syntactically valid but useless and not recognized in \PhpCss
+                 * (positions start at 1)
+                 */
+                '/:nth\-(child|of\-type|last\-child)\(0\)/'
+                    => fn ($match): string => $this->nthChildZero($match, $selector),
 
                 // invalid characters appearing in selectors
                 //   <200b> zero width space
                 //   <200c> zero width non-joiner
                 //   <200d> zero width joiner
-                '/[\x{200B}-\x{200D}]/u' => function ($match) use ($selector): string {
-                    return $this->_badCharacters($match, $selector);
-                },
+                '/[\x{200B}-\x{200D}]/u' => fn ($match): string => $this->badCharacters($match, $selector),
 
                 // quoted a selector in the argument to a negation pseudo-class, as if it was a string literal
-                "/:not\('(.+)'\)/" => function ($match) use ($selector): string {
-                    return $this->_quotedNegationArgument($match, $selector);
-                },
+                "/:not\('(.+)'\)/" => fn ($match): string => $this->quotedNegationArgument($match, $selector),
 
                 // used a class or Id instead of a pseudo-class position
-                "/:nth\-((?:last\-)?(?:child|of\-type))\((?:\.|#).*\)/" => function ($match) use ($selector): string {
-                    return $this->_badPseudoClassPosition($match, $selector);
-                },
+                "/:nth\-((?:last\-)?(?:child|of\-type))\((?:\.|#).*\)/"
+                    => fn ($match): string => $this->badPseudoClassPosition($match, $selector),
 
                 // unrecognized vendor extension
-                "/:?(?::-ms-|:-webkit-|:-moz-|:-o-)[0-9a-z\-]*+/" => function ($match) use ($selector): string {
-                    return $this->_vendorPrefix($match, $selector);
-                },
+                "/:?(?::-ms-|:-webkit-|:-moz-|:-o-)[0-9a-z\-]*+/"
+                    => fn ($match): string => $this->vendorPrefix($match, $selector),
 
                 // Empty :not()
-                '/:not\(\)/' => function ($match) use ($selector): string {
-                    return $this->_emptyNot($match, $selector);
-                },
+                '/:not\(\)/' => fn ($match): string => $this->emptyNot($match, $selector),
 
                 // Experimental pseudo-elements
-                '/(.*)?::(?:placeholder|backdrop|marker|spelling-error|grammar-error)([^-0-9a-zA-Z]*+)?/' => function ($match) use ($selector): string {
-                    return $this->_experimentalPseudoElement($match, $selector);
-                },
+                '/(.*)?::(?:placeholder|backdrop|marker|spelling-error|grammar-error)([^-0-9a-zA-Z]*+)?/'
+                    => fn ($match): string => $this->experimentalPseudoElement($match, $selector),
 
                 // Unsupported-in-PhpCss pseudo-elements
-                '/(.*)?::(?:selection|cue|slotted)([^-0-9a-zA-Z]*+)?$/' => static fn ($match) => "${match[1]}${match[2]}",
+                '/(.*)?::(?:selection|cue|slotted)([^-0-9a-zA-Z]*+)?$/'
+                    => static fn ($match) => "${match[1]}${match[2]}",
 
-//                // Experimental pseudo-classes
-                '/(.*)?:(?:any-link|dir\(.*\)|fullscreen|host\(.*\)|host-context\(.*\))([^-0-9a-zA-Z]*+)?/' => function ($match) use ($selector): string {
-                    return $this->_experimentalPseudoClass($match, $selector);
-                },
+                // Experimental pseudo-classes
+                '/(.*)?:(?:any-link|dir\(.*\)|fullscreen|host\(.*\)|host-context\(.*\))([^-0-9a-zA-Z]*+)?/'
+                    => fn ($match): string => $this->experimentalPseudoClass($match, $selector),
 
                 // Unsupported-in-PhpCss pseudo-classes
-                '/(.*)?:(?:required|valid|default|defined|first|host|in-range|indeterminate|invalid|left|optional|out-of-range|read-only|read-write|right|scope)([^-0-9a-zA-Z]*+)?/' => static fn ($match) => "${match[1]}${match[2]}",
+                '/(.*)?:(?:required|valid|default|defined|first|host|in-range|indeterminate|invalid|left|optional'
+                    . '|out-of-range|read-only|read-write|right|scope)([^-0-9a-zA-Z]*+)?/'
+                    => static fn ($match) => "${match[1]}${match[2]}",
             ],
             $selector,
             -1,
@@ -109,9 +110,9 @@ class Cleaner
     /**
      * Reset the cleaner to clean a new selector
      */
-    private function _reset(): void
+    private function reset(): void
     {
-        $this->_replacements = [];
+        $this->replacements = [];
     }
 
     /**
@@ -122,9 +123,9 @@ class Cleaner
      *
      * @return string The replacement string for that section of the selector.
      */
-    private function _nthChildZero(array $match, string $selector): string
+    private function nthChildZero(array $match, string $selector): string
     {
-        return $this->_recordReplacement('notices/ordinality', $selector, $match[0], ":nth-{$match[1]}(0n)");
+        return $this->recordReplacement('notices/ordinality', $selector, $match[0], ":nth-{$match[1]}(0n)");
     }
 
     /**
@@ -135,9 +136,9 @@ class Cleaner
      *
      * @return string The replacement string for that section of the selector.
      */
-    private function _badCharacters(array $match, string $selector): string
+    private function badCharacters(array $match, string $selector): string
     {
-        return $this->_recordReplacement('warnings/bad-characters', $selector, $match[0], '');
+        return $this->recordReplacement('warnings/bad-characters', $selector, $match[0], '');
     }
 
     /**
@@ -148,9 +149,9 @@ class Cleaner
      *
      * @return string The replacement string for that section of the selector.
      */
-    private function _quotedNegationArgument(array $match, string $selector): string
+    private function quotedNegationArgument(array $match, string $selector): string
     {
-        return $this->_recordReplacement('warnings/quote-all-the-things', $selector, $match[0], ":not({$match[1]})");
+        return $this->recordReplacement('warnings/quote-all-the-things', $selector, $match[0], ":not({$match[1]})");
     }
 
     /**
@@ -161,9 +162,9 @@ class Cleaner
      *
      * @return string The replacement string for that section of the selector.
      */
-    private function _badPseudoClassPosition(array $match, string $selector): string
+    private function badPseudoClassPosition(array $match, string $selector): string
     {
-        return $this->_recordReplacement(
+        return $this->recordReplacement(
             'warnings/bad-pseudo-class-position',
             $selector,
             $match[0],
@@ -179,9 +180,9 @@ class Cleaner
      *
      * @return string The replacement string for that section of the selector.
      */
-    private function _vendorPrefix(array $match, string $selector): string
+    private function vendorPrefix(array $match, string $selector): string
     {
-        return $this->_recordReplacement('notices/unrecognized-vendor-extension', $selector, $match[0], '');
+        return $this->recordReplacement('notices/unrecognized-vendor-extension', $selector, $match[0], '');
     }
 
     /**
@@ -192,9 +193,9 @@ class Cleaner
      *
      * @return string The replacement string for that section of the selector.
      */
-    private function _emptyNot(array $match, string $selector): string
+    private function emptyNot(array $match, string $selector): string
     {
-        return $this->_recordReplacement('warnings/empty-not', $selector, $match[0], '');
+        return $this->recordReplacement('warnings/empty-not', $selector, $match[0], '');
     }
 
     /**
@@ -205,9 +206,9 @@ class Cleaner
      *
      * @return string The replacement string for that section of the selector.
      */
-    private function _experimentalPseudoElement(array $match, string $selector): string
+    private function experimentalPseudoElement(array $match, string $selector): string
     {
-        return $this->_recordReplacement(
+        return $this->recordReplacement(
             'notices/experimental-pseudo-element',
             $selector,
             $match[0],
@@ -223,9 +224,9 @@ class Cleaner
      *
      * @return string The replacement string for that section of the selector.
      */
-    private function _experimentalPseudoClass(array $match, string $selector): string
+    private function experimentalPseudoClass(array $match, string $selector): string
     {
-        return $this->_recordReplacement(
+        return $this->recordReplacement(
             'notices/experimental-pseudo-class',
             $selector,
             $match[0],
@@ -243,9 +244,9 @@ class Cleaner
      *
      * @return string The replacement string for that section of the selector
      */
-    private function _recordReplacement(string $type, string $selector, string $match, string $after): string
+    private function recordReplacement(string $type, string $selector, string $match, string $after): string
     {
-        $this->_replacements[$type][] = [
+        $this->replacements[$type][] = [
             'before' => $selector,
             'match' => $match,
             'after' => $after,
@@ -261,7 +262,7 @@ class Cleaner
      */
     public function getCleanedSelector(): string
     {
-        return trim($this->_selector);
+        return trim($this->selector);
     }
 
     /**
@@ -271,6 +272,6 @@ class Cleaner
      */
     public function getReplacements(): array
     {
-        return $this->_replacements;
+        return $this->replacements;
     }
 }

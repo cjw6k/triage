@@ -21,7 +21,7 @@ use const PHP_EOL;
  */
 class Microformats2
 {
-    use SemanticsTrait;
+    use Semantics;
 
     /**
      * Output a message for each item in the set of notices
@@ -34,11 +34,11 @@ class Microformats2
             return;
         }
 
-        foreach ($this->_troubles as $trouble_type => $troubles) {
-            $this->_describe($trouble_type);
+        foreach ($this->troubles as $trouble_type => $troubles) {
+            $this->describe($trouble_type);
 
             if ($trouble_type == 'prefix-format') {
-                $this->_list($trouble_type);
+                $this->list($trouble_type);
                 continue;
             }
 
@@ -68,8 +68,8 @@ class Microformats2
      */
     public function getCount(): int
     {
-        if ($this->_count !== null) {
-            return $this->_count;
+        if ($this->count !== null) {
+            return $this->count;
         }
 
         $trouble_count = 0;
@@ -92,9 +92,9 @@ class Microformats2
      *
      * @param string $trouble_type The type of prefix.
      */
-    private function _list(string $trouble_type): void
+    private function list(string $trouble_type): void
     {
-        foreach ($this->_troubles[$trouble_type] as $trouble_subtype => $subtype) {
+        foreach ($this->troubles[$trouble_type] as $trouble_subtype => $subtype) {
             switch ($trouble_subtype) {
                 case 'single-letter':
                     echo "      - Single Letter Prefixes: ", PHP_EOL;
@@ -124,7 +124,7 @@ class Microformats2
      *
      * @param string $trouble_type The type of trouble.
      */
-    private function _describe(string $trouble_type): void
+    private function describe(string $trouble_type): void
     {
         echo PHP_EOL;
 
@@ -135,12 +135,14 @@ class Microformats2
                 break;
 
             case 'well-known-format':
-                echo "      The webapp should not use for styling, class names that intersect the microformats2 class name prefix scheme (h-*, p-*, e-*, u-*, df-*)";
+                echo "      The webapp should not use for styling, class names that intersect the microformats2 class ",
+                    "name prefix scheme (h-*, p-*, e-*, u-*, df-*)";
 
                 break;
 
             case 'prefix-format':
-                echo "      An active area of research for the microformats community is to gauge the usage of single and double letter prefixes";
+                echo "      An active area of research for the microformats community is to gauge the usage of single ",
+                    "and double letter prefixes";
 
                 break;
         }

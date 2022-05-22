@@ -13,7 +13,11 @@ namespace Triage\Triage\Analyzer\Css;
 use Exception;
 use PhpCss;
 use PhpCss\Ast\Selector\Combinator\Child;
+use PhpCss\Ast\Selector\Combinator\Descendant;
+use PhpCss\Ast\Selector\Combinator\Follower;
+use PhpCss\Ast\Selector\Combinator\Next;
 use Throwable;
+use Triage\Triage\Analyzer\Css\Ast\Cleaner;
 
 use function explode;
 use function get_class;
@@ -34,7 +38,7 @@ class Ast
      *
      * @var array<mixed>
      */
-    private array $_syntax = [
+    private array $syntax = [
         'notices' => [],
         'warnings' => [],
         'errors' => [],
@@ -45,7 +49,7 @@ class Ast
      *
      * @var array<mixed>
      */
-    private array $_semantics = [
+    private array $semantics = [
         'posh' => [],
         'microformats' => [],
         'microformats2' => [],
@@ -54,24 +58,24 @@ class Ast
     /**
      * The collection of tags that make up Plain Old Simple HTML (POSH)
      */
-    private array|object|null $_posh = null;
+    private array|object|null $posh = null;
 
     /**
      * The tokens of the well-known microformats vocabularies
      */
-    private array|object|null $_microformats = null;
+    private array|object|null $microformats = null;
 
     /**
      * The details of the file to parse
      *
      * @var array<mixed>
      */
-    private array $_file = [];
+    private array $file = [];
 
     /**
      * A reference to the CSS selector cleaner
      */
-    private ?Ast\Cleaner $_cleaner = null;
+    private ?Cleaner $cleaner = null;
 
     /**
      * Catpures the file details and the set of POSH tags
@@ -82,10 +86,10 @@ class Ast
      */
     public function __construct(array $file, object $posh, object $microformats)
     {
-        $this->_file = $file;
-        $this->_posh = $posh;
-        $this->_microformats = $microformats;
-        $this->_cleaner = new Ast\Cleaner();
+        $this->file = $file;
+        $this->posh = $posh;
+        $this->microformats = $microformats;
+        $this->cleaner = new Cleaner();
     }
 
     /**
@@ -99,7 +103,10 @@ class Ast
      */
     public function selector(string $selector, int $line_number, ?string $original_selector = null): void
     {
-        // This function is called recursively, applying various try-to-fix replacements until AST is determined or it gives up
+        /*
+         * This function is called recursively, applying various try-to-fix replacements until AST is determined or it
+         * gives up.
+         */
         if ($original_selector === null) {
             $original_selector = $selector;
         }
@@ -114,10 +121,10 @@ class Ast
 
             // There is only ever one sequence in the group, because the CSS has already been parsed into selectors
             foreach ($sequence_group as $sequence) {
-                $this->_sequence($sequence, $line_number);
+                $this->sequence($sequence, $line_number);
             }
         } catch (Throwable $ast_exception) {
-            $this->_handleSelectorException($ast_exception, $selector, $line_number, $original_selector);
+            $this->handleSelectorException($ast_exception, $selector, $line_number, $original_selector);
         }
     }
 
@@ -129,20 +136,25 @@ class Ast
      * @param int $line_number The line number of the selector in the file.
      * @param string $original_selector The original selector from the file, before any modifications.
      */
-    private function _handleSelectorException(Throwable $ast_exception, string $selector, int $line_number, string $original_selector): void
+    private function handleSelectorException(
+        Throwable $ast_exception,
+        string $selector,
+        int $line_number,
+        string $original_selector
+    ): void
     {
-        $replacements_made = $this->_cleaner->clean($selector);
+        $replacements_made = $this->cleaner->clean($selector);
 
         if (0 < $replacements_made) {
-            $this->_recordReplacements($line_number);
+            $this->recordReplacements($line_number);
 
-            $this->selector($this->_cleaner->getCleanedSelector(), $line_number, $original_selector);
+            $this->selector($this->cleaner->getCleanedSelector(), $line_number, $original_selector);
 
             return;
         }
 
         // Unable to clean bad selector, ignore it
-        $this->_syntax['errors'][$line_number][] = [
+        $this->syntax['errors'][$line_number][] = [
             'before' => $original_selector,
             'after' => $selector,
             'exception' => $ast_exception->getMessage(),
@@ -154,13 +166,13 @@ class Ast
      *
      * @param int $line_number The line number of the selectore.
      */
-    private function _recordReplacements(int $line_number): void
+    private function recordReplacements(int $line_number): void
     {
-        foreach ($this->_cleaner->getReplacements() as $replacement_type => $replacements) {
+        foreach ($this->cleaner->getReplacements() as $replacement_type => $replacements) {
             [$level, $type] = explode('/', $replacement_type);
 
             foreach ($replacements as $replacement) {
-                $this->_syntax[$level][$type][$line_number][] = $replacement;
+                $this->syntax[$level][$type][$line_number][] = $replacement;
             }
         }
     }
@@ -173,10 +185,10 @@ class Ast
      *
      * @throws Exception Thrown when a combinator that has no defined interpretation here, is encountered.
      */
-    private function _sequence(object $sequence, int $line_number): void
+    private function sequence(object $sequence, int $line_number): void
     {
         foreach ($sequence->simples as $simple) {
-            $this->_simple($simple, $line_number);
+            $this->simple($simple, $line_number);
         }
 
         if ($sequence->combinator === null) {
@@ -185,10 +197,11 @@ class Ast
 
         switch ($sequence->combinator::class) {
             case Child::class:
-            case PhpCss\Ast\Selector\Combinator\Descendant::class:
-            case PhpCss\Ast\Selector\Combinator\Next::class:
-            case PhpCss\Ast\Selector\Combinator\Follower::class:
-                $this->_sequence($sequence->combinator->sequence, $line_number);
+            case Descendant::class:
+            case Next::class:
+            case Follower::class:
+                $this->sequence($sequence->combinator->sequence, $line_number);
+
                 break;
 
             default:
@@ -205,7 +218,7 @@ class Ast
      *
      * @throws Exception Thrown when a simple type that has no defined interpretation here, is encountered.
      */
-    private function _simple(object $simple, int $line_number): void
+    private function simple(object $simple, int $line_number): void
     {
         // This function should have $parameter = false in the last position
 
@@ -215,18 +228,18 @@ class Ast
             // Nothing doing
             // 'PhpCss\Ast\Value\Position': :nth-child(4n+1)
             // 'PhpCss\Ast\Value\Language': :lang(he-il)
-            $this->_simpleValue($namespace_parts[3], $simple, $line_number);
+            $this->simpleValue($namespace_parts[3], $simple, $line_number);
 
             return;
         }
 
         if ($namespace_parts[2] == 'Selector') {
-            $this->_simpleSelector($namespace_parts[4], $simple, $line_number);
+            $this->simpleSelector($namespace_parts[4], $simple, $line_number);
 
             return;
         }
 
-        throw new Exception("Unknown simple type in {$this->_file['scan_path']} @ $line_number: " . $simple::class);
+        throw new Exception("Unknown simple type in {$this->file['scan_path']} @ $line_number: " . $simple::class);
     }
 
     /**
@@ -240,19 +253,18 @@ class Ast
      *
      * @throws Exception Thrown when a simple value type that has no defined interpretation here, is encountered.
      */
-    private function _simpleValue(string $value_type, object $simple, int $line_number): void
+    private function simpleValue(string $value_type, object $simple, int $line_number): void
     {
         switch ($value_type) {
             case 'Position':
-                // Nothing doing
-                break;
-
             case 'Language':
                 // Nothing doing
                 break;
 
             default:
-                throw new Exception("Unknown simple value type in {$this->_file['scan_path']} @ $line_number: " . $simple::class);
+                throw new Exception(
+                    "Unknown simple value type in {$this->file['scan_path']} @ $line_number: " . $simple::class
+                );
         }
     }
 
@@ -265,7 +277,7 @@ class Ast
      *
      * @throws Exception Thrown when a simple selector type that has no defined interpretation here, is encountered.
      */
-    private function _simpleSelector(string $selector_type, object $simple, int $line_number): void
+    private function simpleSelector(string $selector_type, object $simple, int $line_number): void
     {
         switch ($selector_type) {
             case 'Type':
@@ -275,13 +287,16 @@ class Ast
             case 'PseudoClass':
             case 'PseudoElement':
             case 'Universal':
-                $method = "_simpleSelector$selector_type";
+                $method = "simpleSelector$selector_type";
                 $this->$method($simple, $line_number);
 
                 break;
 
             default:
-                throw new Exception("Unknown simple selector type ($selector_type) in {$this->_file['scan_path']} @ $line_number: " . $simple::class);
+                throw new Exception(
+                    "Unknown simple selector type ($selector_type) in {$this->file['scan_path']} @ $line_number: "
+                        . $simple::class
+                );
         }
     }
 
@@ -295,18 +310,18 @@ class Ast
      *
      * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
      */
-    private function _simpleSelectorType(object $simple, int $line_number): void
+    private function simpleSelectorType(object $simple, int $line_number): void
     {
         // Element
         // e.g.: a; span; html
         // nothing doing
         $element = $simple->elementName;
 
-        if (isset($this->_posh->$element)) {
+        if (isset($this->posh->$element)) {
             return;
         }
 
-        $this->_semantics['posh'][$simple->elementName][] = $line_number;
+        $this->semantics['posh'][$simple->elementName][] = $line_number;
     }
 
     /**
@@ -319,14 +334,14 @@ class Ast
      *
      * @SuppressWarnings(PHPMD)
      */
-    private function _simpleSelectorClassName(object $simple, int $line_number): void
+    private function simpleSelectorClassName(object $simple, int $line_number): void
     {
         // Class <- what we are here to investigate
         $token = $simple->className;
         $normalized_token = strtolower($token);
 
-        if (isset($this->_microformats->microformats->$normalized_token)) {
-            $this->_semantics['microformats'][$normalized_token][] = $line_number;
+        if (isset($this->microformats->microformats->$normalized_token)) {
+            $this->semantics['microformats'][$normalized_token][] = $line_number;
 
             //showMe($target['scan_path'] . ' @ ' . $line_number . ': using microformats token ' . $normalized_token);
             return;
@@ -337,18 +352,27 @@ class Ast
         }
 
         if (preg_match('/^(?:h|e|u|dt|p)-.*/i', $token)) {
-            //showMe($target['scan_path'] . ' @ ' . $line_number . ': using microformats2 prefixing ' . $normalized_token);
-            $this->_microformats2Semantics($normalized_token, $line_number);
+            /*
+             * showMe(
+             *     $target['scan_path'] . ' @ ' . $line_number . ': using microformats2 prefixing ' . $normalized_token
+             * );
+             */
+            $this->microformats2Semantics($normalized_token, $line_number);
 
             return;
         }
 
         $single_or_double_letter_prefix = substr($normalized_token, 0, strpos($normalized_token, '-'));
 
-        //showMe("Speculative mf2 token format: \"" . $single_or_double_letter_prefix . "-*\" matching \"$token\" used in {$target['scan_path']} @ line $line_number");
+        /*
+         * showMe(
+         *    "Speculative mf2 token format: \"" . $single_or_double_letter_prefix . "-*\" matching \"$token\" used in "
+         *         . "{$target['scan_path']} @ line $line_number"
+         * );
+         */
 
         if (strlen($single_or_double_letter_prefix) == 2) {
-            $this->_semantics['microformats2']['prefix-format']['double-letter'][$single_or_double_letter_prefix][] = [
+            $this->semantics['microformats2']['prefix-format']['double-letter'][$single_or_double_letter_prefix][] = [
                 'line_number' => $line_number,
                 'token' => $token,
             ];
@@ -356,7 +380,7 @@ class Ast
             return;
         }
 
-        $this->_semantics['microformats2']['prefix-format']['single-letter'][$single_or_double_letter_prefix][] = [
+        $this->semantics['microformats2']['prefix-format']['single-letter'][$single_or_double_letter_prefix][] = [
             'line_number' => $line_number,
             'token' => $token,
         ];
@@ -368,18 +392,23 @@ class Ast
      * @param string $normalized_token The CSS token.
      * @param int $line_number The line number.
      */
-    private function _microformats2Semantics(string $normalized_token, int $line_number): void
+    private function microformats2Semantics(string $normalized_token, int $line_number): void
     {
         // Check for well-known mf2 vocabulary tokens
-        if (isset($this->_microformats->microformats2->$normalized_token)) {
+        if (isset($this->microformats->microformats2->$normalized_token)) {
             //showMe("Well-known mf2 token: \"$normalized_token\" used in {$target['scan_path']} @ line $line_number");
-            $this->_semantics['microformats2']['well-known'][$normalized_token][] = $line_number;
+            $this->semantics['microformats2']['well-known'][$normalized_token][] = $line_number;
 
             return;
         }
 
-        //showMe("Well-known mf2 token format: \"" . substr($normalized_token, 0, 1) . "-*\" matching \"$token\" used in {$target['scan_path']} @ line $line_number");
-        $this->_semantics['microformats2']['well-known-format'][$normalized_token][] = $line_number;
+        /*
+         * showMe(
+         *     "Well-known mf2 token format: \"" . substr($normalized_token, 0, 1) . "-*\" matching \"$token\" used in "
+         *         . "{$target['scan_path']} @ line $line_number"
+         * );
+         */
+        $this->semantics['microformats2']['well-known-format'][$normalized_token][] = $line_number;
     }
 
     /**
@@ -390,7 +419,7 @@ class Ast
      *
      * @SuppressWarnings(PHPMD)
      */
-    private function _simpleSelectorId(object $simple, int $line_number): void
+    private function simpleSelectorId(object $simple, int $line_number): void
     {
         // Not good to use microformats vocab in IDs either? (warn)
         // showMe('#' . $simple->id);
@@ -404,7 +433,7 @@ class Ast
      *
      * @SuppressWarnings(PHPMD)
      */
-    private function _simpleSelectorAttribute(object $simple, int $line_number): void
+    private function simpleSelectorAttribute(object $simple, int $line_number): void
     {
         // The following should be done once, outside the loop, for how the library is setup now
         // For forward compatibility, leaving as is for the time being
@@ -421,7 +450,7 @@ class Ast
      *
      * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
      */
-    private function _simpleSelectorPseudoClass(object $simple, int $line_number): void
+    private function simpleSelectorPseudoClass(object $simple, int $line_number): void
     {
         //showMe(':' . $simple->name);
         if ($simple->parameter === null) {
@@ -429,7 +458,7 @@ class Ast
         }
 
         //$this->_selectorASTSimple($simple->parameter, $line_number, true);
-        $this->_simple($simple->parameter, $line_number);
+        $this->simple($simple->parameter, $line_number);
     }
 
     /**
@@ -440,7 +469,7 @@ class Ast
      *
      * @SuppressWarnings(PHPMD)
      */
-    private function _simpleSelectorPseudoElement(object $simple, int $line_number): void
+    private function simpleSelectorPseudoElement(object $simple, int $line_number): void
     {
         //showMe("::$simple->name");
     }
@@ -453,7 +482,7 @@ class Ast
      *
      * @SuppressWarnings(PHPMD)
      */
-    private function _simpleSelectorUniversal(object $simple, int $line_number): void
+    private function simpleSelectorUniversal(object $simple, int $line_number): void
     {
         // showMe('*');
     }
@@ -465,7 +494,7 @@ class Ast
      */
     public function getSyntax(): array
     {
-        return $this->_syntax;
+        return $this->syntax;
     }
 
     /**
@@ -475,6 +504,6 @@ class Ast
      */
     public function getSemantics(): array
     {
-        return $this->_semantics;
+        return $this->semantics;
     }
 }

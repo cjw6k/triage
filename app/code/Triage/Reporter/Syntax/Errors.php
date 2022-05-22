@@ -22,7 +22,7 @@ use const PHP_EOL;
  */
 class Errors
 {
-    use SyntaxTrait {
+    use Syntax {
         report as traitReport;
         getCount as traitGetCount;
     }
@@ -52,7 +52,7 @@ class Errors
 
         echo PHP_EOL, "      Errors that can't be cleaned of unrecognized tokens are ignored.", PHP_EOL, PHP_EOL;
 
-        foreach ($this->_troubles as $line_number => $errors) {
+        foreach ($this->troubles as $line_number => $errors) {
             $prefix = "      - @ line $line_number: ";
             $prefix_length = strlen($prefix);
 
