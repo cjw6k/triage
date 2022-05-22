@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Make various paths available in globally defined constants
 const FIXTURES_ROOT = __DIR__ . '/';
 const TEST_ROOT = FIXTURES_ROOT . '../';

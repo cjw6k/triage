@@ -1,20 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Triage\Triage\Reporter;
 
-use Triage\Triage\Reporter\Css;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
+use Triage\Triage\Reporter\Css;
 
 class CssSpec extends ObjectBehavior
 {
-	function let()
-	{
-		$show_cows = false;
-		$this->beConstructedWith($show_cows);
-	}
-	
-    function it_is_initializable()
+    function let(): void
+    {
+        $show_cows = false;
+        $this->beConstructedWith($show_cows);
+    }
+
+    function it_is_initializable(): void
     {
         $this->shouldHaveType(Css::class);
     }

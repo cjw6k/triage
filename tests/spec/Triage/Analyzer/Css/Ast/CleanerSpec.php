@@ -1,14 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Triage\Triage\Analyzer\Css\Ast;
 
-use Triage\Triage\Analyzer\Css\Ast\Cleaner;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
+use Triage\Triage\Analyzer\Css\Ast\Cleaner;
 
 class CleanerSpec extends ObjectBehavior
 {
-    function it_is_initializable()
+    function it_is_initializable(): void
     {
         $this->shouldHaveType(Cleaner::class);
     }

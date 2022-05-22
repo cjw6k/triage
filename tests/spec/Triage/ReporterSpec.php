@@ -1,21 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Triage\Triage;
 
-use Triage\Triage\Reporter;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
+use Triage\Triage\Reporter;
 
 class ReporterSpec extends ObjectBehavior
 {
-	function let()
-	{
-		$show_all_files = false;
-		$show_cows = false;
-		$this->beConstructedWith($show_all_files, $show_cows);
-	}
-	
-    function it_is_initializable()
+    function let(): void
+    {
+        $show_all_files = false;
+        $show_cows = false;
+        $this->beConstructedWith($show_all_files, $show_cows);
+    }
+
+    function it_is_initializable(): void
     {
         $this->shouldHaveType(Reporter::class);
     }

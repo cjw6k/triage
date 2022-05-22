@@ -1,53 +1,52 @@
 <?php
+
 /**
  * The Microformats class is herein defined.
  *
- * @copyright (C) 2018 by the contributors
- *
- * LICENSE: See the /LICENSE.md file for details (MIT)
- *
- * @package	Triage
- * @author	Christopher James Willcock <cjwillcock@ieee.org>
- * @link	https://triage.cjwillcock.ca/
+ * @link https://triage.cjwillcock.ca/
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Triage\Triage\Reporter\Semantics;
+
+use function str_repeat;
+use function strlen;
+
+use const PHP_EOL;
 
 /**
  * Microformats outputs messages about usage of microformats tokens found in analysis of CSS files.
  */
 class Microformats
 {
+    use SemanticsTrait;
 
-	use SemanticsTrait;
+    /**
+     * Output a message for each item in the set of notices
+     */
+    public function report(): void
+    {
+        echo "   - Microformats: ", $this->getCount(), PHP_EOL;
 
-	/**
-	 * Output a message for each item in the set of notices
-	 *
-	 * @return void
-	 */
-	public function report()
-	{
-		echo "   - Microformats: ", $this->getCount(), PHP_EOL;
+        if ($this->getCount() == 0) {
+            return;
+        }
 
-		if(0 == $this->getCount()){
-			return;
-		}
+        echo PHP_EOL, "      The website should not use microformats class names for styling", PHP_EOL, PHP_EOL;
 
-		echo PHP_EOL, "      The website should not use microformats class names for styling", PHP_EOL, PHP_EOL;
-		foreach($this->_troubles as $token => $lines){
-			echo "      - .$token ";
-			foreach($lines as $key => $line_number){
-				if(0 != $key){
-					echo "          ", str_repeat(" ", strlen($token));
-				}
-				echo "@ line $line_number", PHP_EOL;
-			}
-		}
-		echo PHP_EOL;
+        foreach ($this->_troubles as $token => $lines) {
+            echo "      - .$token ";
 
-	}
+            foreach ($lines as $key => $line_number) {
+                if ($key != 0) {
+                    echo "          ", str_repeat(" ", strlen($token));
+                }
 
+                echo "@ line $line_number", PHP_EOL;
+            }
+        }
+
+        echo PHP_EOL;
+    }
 }

@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 // Set the local timezone, if not set
-if(empty(ini_get('date.timezone'))){
-	date_default_timezone_set('UTC');
+if (empty(ini_get('date.timezone'))) {
+    date_default_timezone_set('UTC');
 }
 
 // Make the application root available in a globally defined constant
@@ -14,31 +16,34 @@ const VENDOR_ROOT = PACKAGE_ROOT . 'vendor/';
 require VENDOR_ROOT . 'autoload.php';
 
 // Setup our autoloader for library classes
-spl_autoload_register(function($class_name){
+spl_autoload_register(
+    static function ($class_name): void {
 
-	// Project Namespace (PSR-4)
-	$prefix = 'Triage\\';
+    // Project Namespace (PSR-4)
+        $prefix = 'Triage\\';
 
-	// Location of our classes
-	$base_directory = APP_ROOT . '/code/';
+    // Location of our classes
+        $base_directory = APP_ROOT . '/code/';
 
-	// Check if the class_name begins with our prefix
-	if(0 !== strpos($class_name, $prefix)){
-		// It doesn't so don't handle this autoload request
-		return;
-	}
+    // Check if the class_name begins with our prefix
+        if (strpos($class_name, $prefix) !== 0) {
+            // It doesn't so don't handle this autoload request
+            return;
+        }
 
-	// Get the class name relative to our prefix
-	$relative_class = substr($class_name, strlen($prefix));
+    // Get the class name relative to our prefix
+        $relative_class = substr($class_name, strlen($prefix));
 
-	// Replace the prefix with the base directory
-	// Replace the namespace separator with the directory separator
-	// Append .php
-	$file = $base_directory . str_replace('\\', '/', $relative_class) . '.php';
+    // Replace the prefix with the base directory
+    // Replace the namespace separator with the directory separator
+    // Append .php
+        $file = $base_directory . str_replace('\\', '/', $relative_class) . '.php';
 
-	// If the file exists, require it
-	if(file_exists($file)){
-		require $file;
-	}
+    // If the file exists, require it
+        if (! file_exists($file)) {
+            return;
+        }
 
-});
+        include $file;
+    }
+);

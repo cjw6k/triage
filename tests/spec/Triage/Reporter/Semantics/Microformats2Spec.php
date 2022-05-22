@@ -1,20 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Triage\Triage\Reporter\Semantics;
 
-use Triage\Triage\Reporter\Semantics\Microformats2;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
+use Triage\Triage\Reporter\Semantics\Microformats2;
 
 class Microformats2Spec extends ObjectBehavior
 {
-	function let()
-	{
-		$trouble = array();
-		$this->beConstructedWith($trouble);
-	}
-	
-    function it_is_initializable()
+    function let(): void
+    {
+        $trouble = [];
+        $this->beConstructedWith($trouble);
+    }
+
+    function it_is_initializable(): void
     {
         $this->shouldHaveType(Microformats2::class);
     }

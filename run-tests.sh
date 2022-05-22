@@ -5,7 +5,7 @@
 ###########
 echo -e "\nPHPSpec\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n"
 
-./vendor/bin/phpspec run
+phpspec run
 [[ $? -ne 0 ]] && exit
 
 
@@ -35,8 +35,8 @@ phpqa_result=$?
 ##########
 # PHPDox #
 ##########
-echo -e "\nPHPDox\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n"
-./vendor/bin/phpdox
+#echo -e "\nPHPDox\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n"
+#./vendor/bin/phpdox
 
 
 # Given the public www root is ./public
@@ -51,4 +51,3 @@ cp -r var/build/phpmetrics public/docs/qa/
 
 # Pom pom padinka!
 echo -e "\nAll tests pass\n"
-

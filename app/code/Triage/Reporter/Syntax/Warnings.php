@@ -1,88 +1,86 @@
 <?php
+
 /**
  * The Warnings class is herein defined.
  *
- * @copyright (C) 2018 by the contributors
- *
- * LICENSE: See the /LICENSE.md file for details (MIT)
- *
- * @package	Triage
- * @author	Christopher James Willcock <cjwillcock@ieee.org>
- * @link	https://triage.cjwillcock.ca/
+ * @link https://triage.cjwillcock.ca/
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Triage\Triage\Reporter\Syntax;
+
+use function array_keys;
+
+use const PHP_EOL;
 
 /**
  * Warnings outputs messages about the syntax warnings generated from analysis of CSS files.
  */
 class Warnings
 {
+    use SyntaxTrait {
+        report as traitReport;
+    }
 
-	use SyntaxTrait{
-		report as traitReport;
-	}
+    /**
+     * Output a message for each item in the set of warnings
+     */
+    public function report(): void
+    {
+        echo "   - Warnings: ", $this->getCount(), PHP_EOL;
 
-	/**
-	 * Output a message for each item in the set of warnings
-	 *
-	 * @return void
-	 */
-	public function report()
-	{
-		echo "   - Warnings: ", $this->getCount(), PHP_EOL;
+        if ($this->getCount() == 0) {
+            return;
+        }
 
-		if(0 == $this->getCount()){
-			return;
-		}
+        foreach (array_keys($this->_troubles) as $warning_type) {
+            $this->_describe($warning_type);
+            $this->traitReport($warning_type);
+        }
+    }
 
-		foreach(array_keys($this->_troubles) as $warning_type){
-			$this->_describe($warning_type);
-			$this->traitReport($warning_type);
-		}
+    /**
+     * Output a message describing the type of warning encountered
+     *
+     * @param string $warning_type The type of warning.
+     */
+    private function _describe(string $warning_type): void
+    {
+        echo PHP_EOL;
 
-	}
+        switch ($warning_type) {
+            case 'pseudo-element-confusion':
+                echo "      Pseudo-class syntax used for a pseudo-element.";
 
-	/**
-	 * Output a message describing the type of warning encountered
-	 *
-	 * @param string $warning_type The type of warning.
-	 *
-	 * @return void
-	 */
-	private function _describe(string $warning_type)
-	{
-		echo PHP_EOL;
+                break;
 
-		switch($warning_type){
-			case 'pseudo-element-confusion':
-				echo "      Pseudo-class syntax used for a pseudo-element.";
-				break;
+            case 'pseudo-class-confusion':
+                echo "      Pseudo-element syntax used for a pseudo-class.";
 
-			case 'pseudo-class-confusion':
-				echo "      Pseudo-element syntax used for a pseudo-class.";
-				break;
+                break;
 
-			case 'empty-not':
-				echo "      The :not() pseudo-class requires a comma-separated list of one or more selectors as its argument.";
-				break;
+            case 'empty-not':
+                echo "      The :not() pseudo-class requires a comma-separated list of one or more selectors as its argument.";
 
-			case 'bad-pseudo-class-position':
-				echo "      The position argument must be of the form <An+B> | even | odd.";
-				break;
+                break;
 
-			case 'bad-characters':
-				echo "      Selectors may not include extended white-space characters, e.g.: <200b>, <200c>, <200d>.";
-				break;
+            case 'bad-pseudo-class-position':
+                echo "      The position argument must be of the form <An+B> | even | odd.";
 
-			case 'quote-all-the-things':
-				echo "      Selectors in the argument of a negation pseudo-class should not be quoted like string literals.";
-				break;
-		}
+                break;
 
-		echo PHP_EOL, PHP_EOL;
-	}
+            case 'bad-characters':
+                echo "      Selectors may not include extended white-space characters, e.g.: <200b>, <200c>, <200d>.";
 
+                break;
+
+            case 'quote-all-the-things':
+                echo "      Selectors in the argument of a negation pseudo-class should not be quoted like string literals.";
+
+                break;
+        }
+
+        echo PHP_EOL, PHP_EOL;
+    }
 }

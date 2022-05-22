@@ -1,20 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Triage\Triage\Reporter\Syntax;
 
-use Triage\Triage\Reporter\Syntax\Notices;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
+use Triage\Triage\Reporter\Syntax\Notices;
 
 class NoticesSpec extends ObjectBehavior
 {
-	function let()
-	{
-		$trouble = array();
-		$this->beConstructedWith($trouble);
-	}
-	
-    function it_is_initializable()
+    function let(): void
+    {
+        $trouble = [];
+        $this->beConstructedWith($trouble);
+    }
+
+    function it_is_initializable(): void
     {
         $this->shouldHaveType(Notices::class);
     }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ruleset>
+    <arg value="ps"/>
+    <arg name="colors"/>
+
+    <rule ref="A6a"/>
+
+</ruleset>
