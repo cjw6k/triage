@@ -37,4 +37,4 @@ Everyone at [#IndieWebCamp](https://indieweb.org/)!
 The community that is [microformats](http://microformats.org/)!
 
 ## License
-See the [LICENSE.md](LICENSE.md) file for license rights and limitations (MIT).
+See the [LICENSE.md](LICENSE.md) file for license rights and limitations (BSD3).
