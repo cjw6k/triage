@@ -1,4 +1,5 @@
 # Triage
+A utility which checks webapp sources for compatibility with microformats semantics.
 
 ## Code Documentation
 To generate the documentation, run phpdox with `./vendor/bin/phpdox`. This generates and copies the documentation into `./public/docs/`.
