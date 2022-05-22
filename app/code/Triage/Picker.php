@@ -78,12 +78,12 @@ class Picker
 
             uasort(
                 $this->_picks,
-                static function ($fs_a, $fs_b) {
+                static function ($fs_a, $fs_b): int {
                     if ($fs_a['path'] == $fs_b['path']) {
-                        return $fs_a['filename'] > $fs_b['filename'];
+                        return strnatcasecmp($fs_a['filename'], $fs_b['filename']);
                     }
 
-                    return $fs_a['path'] > $fs_b['path'];
+                    return strnatcasecmp($fs_a['path'], $fs_b['path']);
                 }
             );
 

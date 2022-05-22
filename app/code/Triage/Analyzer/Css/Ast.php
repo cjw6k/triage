@@ -12,6 +12,7 @@ namespace Triage\Triage\Analyzer\Css;
 
 use Exception;
 use PhpCss;
+use PhpCss\Ast\Selector\Combinator\Child;
 use Throwable;
 
 use function explode;
@@ -182,26 +183,12 @@ class Ast
             return;
         }
 
-        // These are separated out for later statistical tracking (maybe)
-        switch (get_class($sequence->combinator)) {
-            case 'PhpCss\Ast\Selector\Combinator\Child':
+        switch ($sequence->combinator::class) {
+            case Child::class:
+            case PhpCss\Ast\Selector\Combinator\Descendant::class:
+            case PhpCss\Ast\Selector\Combinator\Next::class:
+            case PhpCss\Ast\Selector\Combinator\Follower::class:
                 $this->_sequence($sequence->combinator->sequence, $line_number);
-
-                break;
-
-            case 'PhpCss\Ast\Selector\Combinator\Descendant':
-                $this->_sequence($sequence->combinator->sequence, $line_number);
-
-                break;
-
-            case 'PhpCss\Ast\Selector\Combinator\Next':
-                $this->_sequence($sequence->combinator->sequence, $line_number);
-
-                break;
-
-            case 'PhpCss\Ast\Selector\Combinator\Follower':
-                $this->_sequence($sequence->combinator->sequence, $line_number);
-
                 break;
 
             default:

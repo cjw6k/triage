@@ -11,10 +11,16 @@ declare(strict_types=1);
 namespace Triage\Triage\Analyzer;
 
 use Exception;
+use Sabberworm\CSS\CSSList\AtRuleBlockList;
 use Sabberworm\CSS\CSSList\Document;
+use Sabberworm\CSS\CSSList\KeyFrame;
 use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\Parser;
 
+use Sabberworm\CSS\Property\Charset;
+use Sabberworm\CSS\Property\Import;
+use Sabberworm\CSS\RuleSet\AtRuleSet;
+use Sabberworm\CSS\RuleSet\DeclarationBlock;
 use function file_get_contents;
 use function is_string;
 use function sprintf;
@@ -136,6 +142,8 @@ class Css
      * Analyze the parse tree
      *
      * @param Document $tree The parse tree of the CSS file.
+     *
+     * @throws Exception
      */
     private function _analyze(Document $tree): void
     {
@@ -143,35 +151,35 @@ class Css
             $css_list_class = $css_list_item::class;
 
             switch ($css_list_class) {
-                case 'Sabberworm\CSS\RuleSet\DeclarationBlock':
+                case DeclarationBlock::class:
                     $this->_declarationBlock($css_list_item);
 
                     break;
 
-                case 'Sabberworm\CSS\CSSList\AtRuleBlockList':
+                case AtRuleBlockList::class:
                     // e.g. @media
                     $this->_atRuleBlockList($css_list_item, $css_list_class);
 
                     break;
 
-                case 'Sabberworm\CSS\CSSList\KeyFrame':
+                case KeyFrame::class:
                     // e.g. @keyframe
                     // nothing doing
                     break;
 
-                case 'Sabberworm\CSS\Property\Charset':
+                case Charset::class:
                     // e.g. @charset
                     // nothing doing
                     break;
 
-                case 'Sabberworm\CSS\Property\Import':
+                case Import::class:
                     // e.g. @import
                     $this->_imports_by_line[$css_list_item->getLineNo()] = $css_list_item->getLocation()->getURL()->getString();
 
                     // Is it non-local?
                     break;
 
-                case 'Sabberworm\CSS\RuleSet\AtRuleSet':
+                case AtRuleSet::class:
                     // e.g. @font-face, or any other unrecognized @-rule
                     $this->_atRuleSet($css_list_item, $css_list_class);
 
@@ -256,17 +264,17 @@ class Css
     {
         foreach ($block_list->getContents() as $css_list_item) {
             switch ($css_list_item::class) {
-                case 'Sabberworm\CSS\RuleSet\DeclarationBlock':
+                case DeclarationBlock::class:
                     $this->_declarationBlock($css_list_item, $block_list->atRuleArgs());
 
                     break;
 
-                case 'Sabberworm\CSS\RuleSet\AtRuleSet':
+                case AtRuleSet::class:
                     $this->_atRuleSet($css_list_item, $css_list_class);
 
                     break;
 
-                case 'Sabberworm\CSS\CSSList\KeyFrame':
+                case KeyFrame::class:
                     // nothing doing
                     break;
 
