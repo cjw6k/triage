@@ -10,3 +10,5 @@
 !/var/build/.gitignore
 
 /public/docs
+
+.idea/
