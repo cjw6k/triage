@@ -30,8 +30,6 @@ class Picker
 {
     /**
      * Scanned files that are queued for later use
-     *
-     * @var array<string>
      */
     private array $_picks = [];
 

@@ -34,7 +34,7 @@ class Errors
      */
     public function getCount(): int
     {
-        return $this->traitGetCount() / 3;
+        return (int)($this->traitGetCount() / 3);
     }
 
     /**

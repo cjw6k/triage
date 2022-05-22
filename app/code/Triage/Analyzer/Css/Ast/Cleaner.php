@@ -46,53 +46,53 @@ class Cleaner
                 // pseudo-class syntax used for a pseudo-element
                 '/(?<!:)(:(?:after|before|placeholder|selection|first-letter|first-line|backdrop|cue|grammar-error|marker|slotted|spelling-error))/' => static fn ($match) => ":{$match[1]}",
 
-                // pseudo-element syntax used for a pseduo-class
+                // pseudo-element syntax used for a pseudo-class
                 '/::(visited|hover|link|focus|active|empty|checked|disabled|first-child|first-of-type|last-child|last-of-type|not\(.*\)|nth-child\(.*\)|required|nth-last-child\(.*\)|nth-last-of-type\(.*\)|nth-of-type\(.*\)|only-child|only-of-type|valid|invalid|indeterminate|any|any-link|default|defined|dir\(.*\)|enabled|first|fullscreen|host|host\(.*\)|host-context\(.*\)|in-range|lang\(.*\)|left|optional|out-of-range|read-only|read-write|right|root|scope|target)/' => static fn ($match) => ":{$match[1]}",
 
                 // nth-*() parameter of 0, which is syntactically valid but useless and not recognized in \PhpCss (positions start at 1)
-                '/:nth\-(child|of\-type|last\-child)\(0\)/' => function ($match) use ($selector): void {
-                    $this->_nthChildZero($match, $selector);
+                '/:nth\-(child|of\-type|last\-child)\(0\)/' => function ($match) use ($selector): string {
+                    return $this->_nthChildZero($match, $selector);
                 },
 
                 // invalid characters appearing in selectors
                 //   <200b> zero width space
                 //   <200c> zero width non-joiner
                 //   <200d> zero width joiner
-                '/[\x{200B}-\x{200D}]/u' => function ($match) use ($selector): void {
-                    $this->_badCharacters($match, $selector);
+                '/[\x{200B}-\x{200D}]/u' => function ($match) use ($selector): string {
+                    return $this->_badCharacters($match, $selector);
                 },
 
                 // quoted a selector in the argument to a negation pseudo-class, as if it was a string literal
-                "/:not\('(.+)'\)/" => function ($match) use ($selector): void {
-                    $this->_quotedNegationArgument($match, $selector);
+                "/:not\('(.+)'\)/" => function ($match) use ($selector): string {
+                    return $this->_quotedNegationArgument($match, $selector);
                 },
 
                 // used a class or Id instead of a pseudo-class position
-                "/:nth\-((?:last\-)?(?:child|of\-type))\((?:\.|#).*\)/" => function ($match) use ($selector): void {
-                    $this->_badPseudoClassPosition($match, $selector);
+                "/:nth\-((?:last\-)?(?:child|of\-type))\((?:\.|#).*\)/" => function ($match) use ($selector): string {
+                    return $this->_badPseudoClassPosition($match, $selector);
                 },
 
                 // unrecognized vendor extension
-                "/:?(?::-ms-|:-webkit-|:-moz-|:-o-)[0-9a-z\-]*+/" => function ($match) use ($selector): void {
-                    $this->_vendorPrefix($match, $selector);
+                "/:?(?::-ms-|:-webkit-|:-moz-|:-o-)[0-9a-z\-]*+/" => function ($match) use ($selector): string {
+                    return $this->_vendorPrefix($match, $selector);
                 },
 
                 // Empty :not()
-                '/:not\(\)/' => function ($match) use ($selector): void {
-                    $this->_emptyNot($match, $selector);
+                '/:not\(\)/' => function ($match) use ($selector): string {
+                    return $this->_emptyNot($match, $selector);
                 },
 
                 // Experimental pseudo-elements
-                '/(.*)?::(?:placeholder|backdrop|marker|spelling-error|grammar-error)([^-0-9a-zA-Z]*+)?/' => function ($match) use ($selector): void {
-                    $this->_experimentalPseudoElement($match, $selector);
+                '/(.*)?::(?:placeholder|backdrop|marker|spelling-error|grammar-error)([^-0-9a-zA-Z]*+)?/' => function ($match) use ($selector): string {
+                    return $this->_experimentalPseudoElement($match, $selector);
                 },
 
                 // Unsupported-in-PhpCss pseudo-elements
                 '/(.*)?::(?:selection|cue|slotted)([^-0-9a-zA-Z]*+)?$/' => static fn ($match) => "${match[1]}${match[2]}",
 
-                // Experimental pseudo-classes
-                '/(.*)?:(?:any-link|dir\(.*\)|fullscreen|host\(.*\)|host-context\(.*\))([^-0-9a-zA-Z]*+)?/' => function ($match) use ($selector): void {
-                    $this->_experimentalPseudoClass($match, $selector);
+//                // Experimental pseudo-classes
+                '/(.*)?:(?:any-link|dir\(.*\)|fullscreen|host\(.*\)|host-context\(.*\))([^-0-9a-zA-Z]*+)?/' => function ($match) use ($selector): string {
+                    return $this->_experimentalPseudoClass($match, $selector);
                 },
 
                 // Unsupported-in-PhpCss pseudo-classes
