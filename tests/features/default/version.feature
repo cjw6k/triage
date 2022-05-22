@@ -8,5 +8,5 @@ Feature: The version information is displayed to help the user know about the pr
 		When I run the command "bin/triage --version"
 		Then I should see "triage"
 		And I should see "Copyright (c) 2018 by the contributors"
-		And I should see "The above copyright notice and this permission notice shall be included"
+		And I should see "All rights reserved."
 		And the exit status should be 0
