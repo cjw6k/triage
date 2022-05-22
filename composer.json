@@ -2,11 +2,18 @@
     "name": "triage/triage",
     "description": "A utility which checks webapp sources for compatibility with microformats semantics",
     "type": "project",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Christopher James Willcock",
+            "email": "cjwillcock@ieee.org"
+        }
+    ],
+    "minimum-stability": "dev",
     "require": {
         "sabberworm/php-css-parser": "^8.4",
         "carica/phpcss": "^2.0"
     },
-    "minimum-stability": "dev",
     "require-dev": {
         "a6a/coding-standards": "dev-main",
         "behat/behat": "3.x-dev",
@@ -16,47 +23,40 @@
         "phpmetrics/phpmetrics": "dev-master",
         "sebastian/phpcpd": "7.0.x-dev"
     },
-    "license": "BSD-3-Clause",
-    "authors": [
-        {
-            "name": "Christopher James Willcock",
-            "email": "cjwillcock@ieee.org"
-        }
-    ],
     "autoload": {
-    	"psr-4": {
-		"Triage\\": "app/code"
-	},
-	"files": [
-		"app/utilities.php"
-	]
+        "psr-4": {
+            "Triage\\": "app/code"
+        },
+        "files": [
+            "app/utilities.php"
+        ]
     },
     "extra": {
-    	"branch-alias": {
-		"dev-master": "0.2.x-dev"
-	}
+        "branch-alias": {
+            "dev-master": "0.2.x-dev"
+        }
     },
     "bin": [
-    	"bin/triage"
+        "bin/triage"
     ],
     "scripts": {
-	"post-install-cmd": [
-		"bin/latest-mime-types",
-		"bin/latest-microformats",
-		"bin/latest-plain-old-simple-html-elements"
-	],
+        "post-install-cmd": [
+            "bin/latest-mime-types",
+            "bin/latest-microformats",
+            "bin/latest-plain-old-simple-html-elements"
+        ],
         "post-update-cmd": [
-		"bin/latest-mime-types",
-		"bin/latest-microformats",
-		"bin/latest-plain-old-simple-html-elements"
-	]
+            "bin/latest-mime-types",
+            "bin/latest-microformats",
+            "bin/latest-plain-old-simple-html-elements"
+        ]
     },
-  "repositories": [
-    {
-      "type": "path",
-      "url": "./../../../a6a/coding-standards"
-    }
-  ],
+    "repositories": [
+        {
+            "type": "path",
+            "url": "./../../../a6a/coding-standards"
+        }
+    ],
     "config": {
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
