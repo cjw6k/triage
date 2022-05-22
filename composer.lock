@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1d0748604a42665734316d07c1ba8255",
+    "content-hash": "7081f67fd13a5e7321c9483fa31bac7b",
     "packages": [
         {
             "name": "carica/phpcss",
