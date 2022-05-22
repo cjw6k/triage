@@ -110,7 +110,7 @@
             "dist": {
                 "type": "path",
                 "url": "./../../../a6a/coding-standards",
-                "reference": "1f2b9f94b53b9f0bbde7fa6546b31931eea28cf1"
+                "reference": "ed68ef39099060ae70f9a2db57944577c05a9c8a"
             },
             "require": {
                 "slevomat/coding-standard": "^7.2",
