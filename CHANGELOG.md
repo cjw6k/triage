@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - This CHANGELOG to track what's happening here
 - An altogether too brief README.md
-- Licensed (MIT) this work, see LICENSE.md for details
+- Licensed (MIT) this work, see LICENSE.md for details*
 - Added CONTRIBUTING.md, for clarity
 - Initialized the project with composer
 - Setup a branch alias
@@ -32,3 +32,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Analyzer, Analysis, Picker, Reporter
 - Css, Ast, Cleaner
 - css analysis - for syntax and POSH semantics
+
+Work re-licensed to BSD-3-Clause as of v0.2.0.
