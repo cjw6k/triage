@@ -16,7 +16,7 @@
         "phpmetrics/phpmetrics": "dev-master",
         "sebastian/phpcpd": "7.0.x-dev"
     },
-    "license": "MIT",
+    "license": "BSD-3-Clause",
     "authors": [
         {
             "name": "Christopher James Willcock",
