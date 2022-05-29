@@ -1,3 +1,8 @@
+# Deprecation Notice
+This project has been given a whole new image, check out [semblance](https://github.com/cjw6k/semblance).
+
+!!! This repository has been archived and will no longer receive updates.
+
 # Triage
 A utility which checks webapp sources for compatibility with microformats semantics.
 
